@@ -1,0 +1,35 @@
+<resources>
+    <string name="app_name">I Never</string>
+    <string name="info_onboarding_first">Я никогда не?!</string>
+    <string name="info_description_onboarding_first">Раскрой все секреты и приключения друзей</string>
+    <string name="great">Отлично</string>
+    <string name="info_onboarding_second">Отвечай на вопросы</string>
+    <string name="info_description_onboarding_second">И признавайся в том, что ты никогда  не делал</string>
+    <string name="good">Хорошо</string>
+    <string name="info_onboarding_thirth">Для вечеринки всё готово</string>
+    <string name="info_description_onboarding_thirth">Соберитесь компанией и приготовьтесь  к безудержному веселью</string>
+    <string name="continue_text">Продолжить</string>
+    <string name="horoscopes_premium">Premium-Версия</string>
+    <string name="premium_info_first">Без рекламы</string>
+    <string name="premium_info_second">Доступ ко всем пакетам карт</string>
+    <string name="premium_info_thirth">Регулярные обновления категорий</string>
+    <string name="subscribe">Подписка</string>
+    <string name="trialPeriodMonth">3 days free, then %1$s/month.\nCancel anytime on Google Play.</string>
+    <string name="trialPeriodYear">7 days free, then %1$s/year.\nCancel anytime on Google Play.</string>
+    <string name="trial_period_three_months">3 days free, then %1$s/3 months.\nCancel anytime on Google Play.</string>
+    <string name="month_1">Месяц</string>
+    <string name="month_2">Месяца</string>
+    <string name="month_3">Месяцев</string>
+    <string name="year">Год</string>
+    <string name="discount">discount <![CDATA[<b>]]>%1$s<![CDATA[</b>]]> %%</string>
+    <string name="price_in_month">%1$s / %2$s</string>
+    <string name="support">Поддержка</string>
+    <string name="try_free">Попробовать бесплатно</string>
+    <string name="write_we_will_be_happy_to_answer">Write to us, we\'re happy to help</string>
+    <string name="have_quetions_question">Any questions?</string>
+    <string name="restore">Восстановить</string>
+    <string name="manage_subscribe">Manage Subscription</string>
+    <string name="you_have_premium_version">You have the Premium version</string>
+    <string name="get_premium_eng">Get Premium</string>
+    <string name="thank_you_for_support">Thank you for your support!</string>
+</resources>

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "686201979442",
+    "project_id": "inever-dc6cc",
+    "storage_bucket": "inever-dc6cc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:686201979442:android:8d85388a77baf02391f22b",
+        "android_client_info": {
+          "package_name": "com.game.INever"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCu_gGgsFqqT_u_YV8QEWxM0qnYRY477c8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
