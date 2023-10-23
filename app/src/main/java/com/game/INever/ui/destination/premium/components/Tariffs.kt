@@ -256,6 +256,7 @@ fun Tariffs(
     }
 }
 
+gttg
 @Composable
 private fun DefaultTariffBox(
     modifier: Modifier = Modifier,
