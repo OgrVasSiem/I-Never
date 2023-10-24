@@ -19,6 +19,9 @@ class INeverApplication : Application(), ImageLoaderFactory {
     @Inject
     lateinit var premiumSynchronizationManager: PremiumSynchronizationManager
 
+    /*@Inject
+    lateinit var applicationLanguageDataStore: ApplicationLanguageDataStore*/
+
     private fun isMainProcess(): Boolean {
         val pid = Process.myPid()
         val activityManager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager

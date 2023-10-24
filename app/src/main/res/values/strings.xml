@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">I Never</string>
     <string name="info_onboarding_first">Я никогда не?!</string>
+    <string name="title">Я никогда не</string>
+    <string name="settings">Настройки</string>
     <string name="info_description_onboarding_first">Раскрой все секреты и приключения друзей</string>
     <string name="great">Отлично</string>
     <string name="info_onboarding_second">Отвечай на вопросы</string>
@@ -13,23 +15,44 @@
     <string name="premium_info_first">Без рекламы</string>
     <string name="premium_info_second">Доступ ко всем пакетам карт</string>
     <string name="premium_info_thirth">Регулярные обновления категорий</string>
-    <string name="subscribe">Подписка</string>
-    <string name="trialPeriodMonth">3 days free, then %1$s/month.\nCancel anytime on Google Play.</string>
-    <string name="trialPeriodYear">7 days free, then %1$s/year.\nCancel anytime on Google Play.</string>
-    <string name="trial_period_three_months">3 days free, then %1$s/3 months.\nCancel anytime on Google Play.</string>
+    <string name="subscribe">Попробовать бесплатно</string>
+    <string name="trialPeriodMonth">Попробуйте 3 дня бесплатно, потом %1$s/месяц.\nПри оплате с Google Play.</string>
+    <string name="trialPeriodYear">Попробуйте 7 дней бесплатно, потом %1$s/год.\nПри оплате с Google Play.</string>
+    <string name="trial_period_three_months">Попробуйте 3 дня бесплатно, потом %1$s/3 месяц.\nПри оплате с Google Play.</string>
     <string name="month_1">Месяц</string>
     <string name="month_2">Месяца</string>
     <string name="month_3">Месяцев</string>
     <string name="year">Год</string>
     <string name="discount">discount <![CDATA[<b>]]>%1$s<![CDATA[</b>]]> %%</string>
     <string name="price_in_month">%1$s / %2$s</string>
-    <string name="support">Поддержка</string>
+    <string name="support">Контакты</string>
+    <string name="premium_eng">premium</string>
     <string name="try_free">Попробовать бесплатно</string>
-    <string name="write_we_will_be_happy_to_answer">Write to us, we\'re happy to help</string>
-    <string name="have_quetions_question">Any questions?</string>
+    <string name="write_we_will_be_happy_to_answer">Напишите, мы с радостью ответим</string>
+    <string name="term_of_use">Условия эксплуатации</string>
+    <string name="have_quetions_question">Есть вопросы?</string>
     <string name="restore">Восстановить</string>
+    <string name="more">Подробнее</string>
     <string name="manage_subscribe">Manage Subscription</string>
-    <string name="you_have_premium_version">You have the Premium version</string>
-    <string name="get_premium_eng">Get Premium</string>
+    <string name="you_have_premium_version">У вас есть премиум версия</string>
+    <string name="get_premium_eng">Получить Premium</string>
     <string name="thank_you_for_support">Thank you for your support!</string>
+    <string name="privacy_policy">Политика конфиденциальности</string>
+    <string name="subscribe_description">
+        Платеж будет списан с вашего аккаунта Google в течение 24 часов до окончания бесплатного пробного периода, если он предлагается.\n\nПодписка продлевается автоматически, если она не отменена по крайней мере за 24 часа до окончания оплаченного периода.\n\nВы Вы можете в любой момент отключить автоматическое продление в настройках своего аккаунта Google Play.
+    </string>
+    <string name="first_premium_privilege">Доступ к 500+ картам</string>
+    <string name="second_premium_privilege">Регулярное добавление новых пакетов и карт</string>
+    <string name="third_premium_privilege">Без рекламы</string>
+    <string name="fourth_premium_privilege">Неограниченный доступ</string>
+    <string name="what_you_get">Что вы получите</string>
+    <string name="privacy_policy_eng">Privacy Policy</string>
+    <string name="term_of_use_eng">Terms of Use</string>
+    <string name="available_to_you">Доступно для вас</string>
+    <string name="write_in_support">Написать в поддержку</string>
+    <string name="estimate_application">Оценить приложение</string>
+    <string name="share_application">Поделиться приложением</string>
+    <string name="more_info_about_premium">Узнайте больше о всех возможностях</string>
+    <string name="application_language">Язык приложения</string>
+    <string name="cards"> карт</string>
 </resources>

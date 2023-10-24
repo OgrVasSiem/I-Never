@@ -53,15 +53,13 @@ fun PremiumInfo() {
                 .fillMaxWidth()
         ) {
             Image(
-                painter = painterResource(R.drawable.img_premium),
+                painter = painterResource(R.drawable.img_premium_onbording),
                 contentDescription = null,
                 modifier = Modifier
                     .size(width = 174.dp, height = 116.dp)
                     .align(Alignment.CenterHorizontally),
                 contentScale = ContentScale.Fit
             )
-
-            Spacer(modifier = Modifier.height(32.dp))
 
             Text(
                 text = stringResource(R.string.horoscopes_premium),
@@ -114,7 +112,7 @@ private fun Info(
 
         Text(
             text = stringResource(info),
-            color = INeverTheme.colors.white,
+            color = INeverTheme.colors.primary,
             style = INeverTheme.textStyles.body2
         )
     }

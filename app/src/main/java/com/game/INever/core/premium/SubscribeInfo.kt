@@ -1,5 +1,6 @@
 package com.game.INever.core.premium
 
+import android.util.Log
 import com.android.billingclient.api.ProductDetails
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -14,8 +15,11 @@ fun getSubscriptionInfo(
     basicPurchaseDetails: ProductDetails?,
     tag: String
 ): SubscriptionInfo {
+    Log.d("tag", "${basicPurchaseDetails?.subscriptionOfferDetails?.map { it.basePlanId }}")
+
     val offerDetails =
-        basicPurchaseDetails?.subscriptionOfferDetails?.firstOrNull { it.offerTags.contains(tag) }
+        basicPurchaseDetails?.subscriptionOfferDetails?.firstOrNull { it.basePlanId.contains(tag) }
+
     val pricePhase =
         offerDetails?.pricingPhases?.pricingPhaseList?.firstOrNull { it.priceAmountMicros > 0L }
 

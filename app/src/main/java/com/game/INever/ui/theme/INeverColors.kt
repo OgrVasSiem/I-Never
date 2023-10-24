@@ -19,7 +19,9 @@ class INeverColors(
     accent: Color,
     grey: Color,
     overlay: Color,
-    destructive: Color
+    destructive: Color,
+    button: Color,
+    textColor: Color
 ) {
 
     var white: Color by mutableStateOf(white)
@@ -55,6 +57,12 @@ class INeverColors(
     var destructive: Color by mutableStateOf(destructive)
         private set
 
+    var button: Color by mutableStateOf(button)
+        private set
+
+    var textColor: Color by mutableStateOf(textColor)
+        private set
+
 
     fun copy(): INeverColors {
         return INeverColors(
@@ -68,7 +76,9 @@ class INeverColors(
             accent = accent,
             grey = grey,
             overlay = overlay,
-            destructive = destructive
+            destructive = destructive,
+            button = button,
+            textColor = textColor
         )
     }
 
@@ -84,6 +94,8 @@ class INeverColors(
         grey = other.grey
         overlay = other.overlay
         destructive = other.destructive
+        button = other.button
+        textColor = other.textColor
     }
 
     override fun toString(): String {
@@ -98,7 +110,9 @@ class INeverColors(
             accent=$accent,
             grey=$grey,
             overlay=$overlay,
-            destructive=$destructive
+            destructive=$destructive,
+            button=$button,
+            textColor=$textColor
         )"""
     }
 }
@@ -110,11 +124,13 @@ fun lightColors(): INeverColors = INeverColors(
     primary = Color(0xFF000000),
     secondary = Color(0x852C3D56),
     placeholder = Color(0x47112B52),
-    divider = Color(0x1C526186),
-    accent = Color(0xFFFFDBC1),
+    divider = Color(0xFF343D4E),
+    accent = Color(0xFFED7878),
     grey = Color(0xFF938AAF),
     overlay = Color(0x80000000),
-    destructive = Color(0xFFCE4949)
+    destructive = Color(0xFFCE4949),
+    button = Color(0xFFFF857A),
+    textColor = Color(0xFF101826)
 )
 
 val LocalINeverColors = staticCompositionLocalOf { lightColors() }

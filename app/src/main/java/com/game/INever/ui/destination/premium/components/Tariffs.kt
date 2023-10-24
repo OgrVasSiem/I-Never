@@ -2,6 +2,7 @@ package com.game.INever.ui.destination.premium.components
 
 import android.graphics.Typeface
 import android.text.style.StyleSpan
+import android.util.Log
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
@@ -217,8 +218,8 @@ fun Tariffs(
                                     )
                                 }
                             },
-                            color = if (!isPremiumScreen) INeverTheme.colors.primary
-                            else INeverTheme.colors.primary,
+                            color = if (!isPremiumScreen) INeverTheme.colors.white
+                            else INeverTheme.colors.white,
                             fontSize = 12.sp,
                             lineHeight = 18.sp,
                             fontWeight = FontWeight(600)
@@ -256,7 +257,6 @@ fun Tariffs(
     }
 }
 
-gttg
 @Composable
 private fun DefaultTariffBox(
     modifier: Modifier = Modifier,
@@ -284,6 +284,15 @@ private fun DefaultTariffBox(
         if (!isActive) Color.Black.copy(0.30f) else Color.Black.copy(0.70f)
     }
 
+    val gradientBackground = INeverTheme.gradients.gradientBackround
+
+    val gradientBackground2 = INeverTheme.gradients.gradientBackround2
+
+    val monthPriceBackgroundColor = remember(isActive, gradientBackground) {
+        if (isActive) Brush.linearGradient(gradientBackground)
+        else Brush.linearGradient(gradientBackground2)
+    }
+
     val animatedHeight by animateDpAsState(if (!isActive) 114.dp else 138.dp, label = "")
 
     val animatedValueTypeTextCount by animateFloatAsState(if (!isActive) 32f else 38f, label = "")
@@ -298,6 +307,7 @@ private fun DefaultTariffBox(
         modifier = modifier
             .height(animatedHeight)
             .clip(RoundedCornerShape(18.dp))
+            .background(monthPriceBackgroundColor)
             .border(
                 width = borderWidth,
                 brush = borderBrush,

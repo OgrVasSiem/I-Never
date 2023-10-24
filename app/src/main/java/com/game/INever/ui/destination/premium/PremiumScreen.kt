@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -39,6 +38,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
@@ -48,8 +48,11 @@ import com.game.INever.R
 import com.game.INever.core.premium.TariffType
 import com.game.INever.ui.RootNavGraph
 import com.game.INever.ui.RootNavigator
+import com.game.INever.ui.destination.premium.components.PremiumPrivilege
 import com.game.INever.ui.destination.premium.components.TariffDescription
 import com.game.INever.ui.destination.premium.components.Tariffs
+import com.game.INever.ui.destinations.destinations.PrivacyPolicyScreenDestination
+import com.game.INever.ui.destinations.destinations.TermOfUseScreenDestination
 import com.game.INever.ui.theme.INeverTheme
 import com.game.INever.ui.utils.linearGradient
 import com.game.INever.utils.LocalActivity
@@ -66,6 +69,8 @@ fun PremiumScreen(
     PremiumScreen(
         viewModel = viewModel,
         popBackStack = { rootNavigator.popBackStack() },
+        navigateToPrivacyPolicyScreen = { rootNavigator.navigate(PrivacyPolicyScreenDestination) },
+        navigateToTermOfUseScreen = { rootNavigator.navigate(TermOfUseScreenDestination) }
     )
 }
 
@@ -73,6 +78,8 @@ fun PremiumScreen(
 private fun PremiumScreen(
     viewModel: PremiumViewModel,
     popBackStack: () -> Unit,
+    navigateToPrivacyPolicyScreen: () -> Unit,
+    navigateToTermOfUseScreen: () -> Unit
 ) {
     val subscribeForSale by viewModel.subscribeForSaleFlows.collectAsState(initial = null)
 
@@ -86,7 +93,7 @@ private fun PremiumScreen(
         Box(
             modifier = Modifier
                 .navigationBarsPadding()
-                .background(brush = Brush.linearGradient(INeverTheme.gradients.gradientDark2))
+                .background(INeverTheme.colors.white)
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState(0))
                 .statusBarsPadding()
@@ -129,12 +136,20 @@ private fun PremiumScreen(
                 } else {
                     InfoAboutPremium()
                 }
+                Spacer(modifier = Modifier.height(32.dp))
+
+                PremiumPrivilege(premiumIsActive = viewModel.premiumIsActive ?: false)
 
                 Spacer(modifier = Modifier.height(32.dp))
 
                 Contacts()
 
                 Spacer(modifier = Modifier.height(32.dp))
+
+                SubscriptionInfo(
+                    navigateToPrivacyPolicyScreen = navigateToPrivacyPolicyScreen,
+                    navigateToTermOfUseScreen = navigateToTermOfUseScreen
+                )
 
                 Spacer(modifier = Modifier.height(56.dp))
             }
@@ -157,7 +172,6 @@ private fun CloseButton(
         Icon(
             painter = painterResource(R.drawable.ic_close),
             contentDescription = null,
-            tint = INeverTheme.colors.white
         )
     }
 }
@@ -176,11 +190,9 @@ private fun PremiumHeader(premiumIsActive: Boolean) {
         Spacer(modifier = Modifier.height(7.dp))
 
         Icon(
-            painter = painterResource(R.drawable.ic_keep),
+            painter = painterResource(R.drawable.img_premium_crown),
             contentDescription = null,
             tint = Color.Unspecified,
-            modifier = Modifier
-                .size(34.dp)
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -225,7 +237,7 @@ fun Contacts() {
     ) {
         Text(
             text = stringResource(R.string.have_quetions_question),
-            color = INeverTheme.colors.accent,
+            color = INeverTheme.colors.primary,
             fontSize = 22.sp,
             lineHeight = 25.sp,
             fontWeight = FontWeight(600)
@@ -235,7 +247,7 @@ fun Contacts() {
 
         Text(
             text = stringResource(R.string.write_we_will_be_happy_to_answer),
-            color = INeverTheme.colors.accent,
+            color = INeverTheme.colors.primary,
             fontSize = 16.sp,
             lineHeight = 22.sp,
             fontWeight = FontWeight(600)
@@ -246,7 +258,18 @@ fun Contacts() {
         Box(
             modifier = Modifier
                 .clip(RoundedCornerShape(100.dp))
-                .border(1.dp, INeverTheme.colors.accent, RoundedCornerShape(100.dp))
+                .border(
+                    width = 1.dp,
+                    brush = Brush.horizontalGradient(
+                        listOf(
+                            Color(0xFFB12A5B),
+                            Color(0xFFCF556C),
+                            Color(0xFFFF8C7F),
+                            Color(0xFFFF8177)
+                        )
+                    ),
+                    shape = RoundedCornerShape(24.dp)
+                )
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() },
                     indication = rememberRipple(
@@ -259,7 +282,7 @@ fun Contacts() {
         ) {
             Text(
                 text = stringResource(R.string.support),
-                color = INeverTheme.colors.accent,
+                color = INeverTheme.colors.primary,
                 fontSize = 16.sp,
                 lineHeight = 20.sp,
                 fontWeight = FontWeight(600),
@@ -277,9 +300,6 @@ private fun SubscriptionButton(
     subscribeForSale: ProductDetails?
 ) {
     val activity = LocalActivity.current
-
-    val accent2Gradient = Brush.linearGradient(INeverTheme.gradients.accent2)
-    val accent2GradientWithAlpha = Brush.linearGradient(INeverTheme.gradients.accent2WithAlpha)
 
     Box(
         contentAlignment = Alignment.Center,
@@ -349,6 +369,81 @@ private fun InfoAboutPremium() {
             color = INeverTheme.colors.white,
             style = INeverTheme.textStyles.bodySemiBold
         )
+    }
+}
+
+@Composable
+private fun SubscriptionInfo(
+    navigateToTermOfUseScreen: () -> Unit,
+    navigateToPrivacyPolicyScreen: () -> Unit
+) {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier
+            .padding(horizontal = 16.dp)
+            .fillMaxWidth()
+            .border(
+                width = 1.dp,
+                brush = Brush.horizontalGradient(
+                    listOf(
+                        Color(0xFFB12A5B),
+                        Color(0xFFCF556C),
+                        Color(0xFFFF8C7F),
+                        Color(0xFFFF8177)
+                    )
+                ),
+                shape = RoundedCornerShape(24.dp)
+            )
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(horizontal = 20.dp, vertical = 24.dp)
+                .fillMaxWidth()
+        ) {
+            Text(
+                text = stringResource(R.string.term_of_use),
+                color = INeverTheme.colors.primary,
+                fontSize = 14.sp,
+                lineHeight = 17.sp,
+                fontWeight = FontWeight(400),
+                textDecoration = TextDecoration.Underline,
+                modifier = Modifier
+                    .clickable(
+                        interactionSource = MutableInteractionSource(),
+                        indication = null
+                    ) {
+                        navigateToTermOfUseScreen()
+                    }
+            )
+
+            Spacer(modifier = Modifier.height(15.dp))
+
+            Text(
+                text = stringResource(R.string.privacy_policy),
+                color = INeverTheme.colors.primary,
+                fontSize = 14.sp,
+                lineHeight = 17.sp,
+                fontWeight = FontWeight(400),
+                textDecoration = TextDecoration.Underline,
+                modifier = Modifier
+                    .clickable(
+                        interactionSource = MutableInteractionSource(),
+                        indication = null
+                    ) {
+                        navigateToPrivacyPolicyScreen()
+                    }
+            )
+
+            Spacer(modifier = Modifier.height(13.dp))
+
+            Text(
+                text = stringResource(R.string.subscribe_description),
+                color = INeverTheme.colors.primary.copy(alpha = 0.52f),
+                fontSize = 14.sp,
+                lineHeight = 19.sp,
+                fontWeight = FontWeight(400),
+            )
+        }
     }
 }
 

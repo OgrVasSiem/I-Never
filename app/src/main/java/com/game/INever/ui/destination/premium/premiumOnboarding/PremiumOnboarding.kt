@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import androidx.annotation.StringRes
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -38,6 +40,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -59,7 +62,10 @@ import com.game.INever.ui.destination.premium.components.Tariffs
 import com.game.INever.ui.destination.premium.premiumOnboarding.components.PremiumInfo
 import com.game.INever.ui.destinations.destinations.MainScreenDestination
 import com.game.INever.ui.destinations.destinations.OnboardingScreenDestination
+import com.game.INever.ui.destinations.destinations.PrivacyPolicyScreenDestination
+import com.game.INever.ui.destinations.destinations.TermOfUseScreenDestination
 import com.game.INever.ui.theme.INeverTheme
+import com.game.INever.ui.utils.linearGradient
 import com.game.INever.utils.LocalActivity
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.ramcosta.composedestinations.annotation.Destination
@@ -92,11 +98,11 @@ fun PremiumOnboardingScreen(
             viewModel = viewModel,
             navigateToChooseZodiacSign = {
                 rootNavigator.navigate(
-                    MainScreenDestination(
-
-                    )
+                    MainScreenDestination()
                 )
             },
+            navigateToPrivacyPolicy = { rootNavigator.navigate(PrivacyPolicyScreenDestination) },
+            navigateToTermOfUse = { rootNavigator.navigate(TermOfUseScreenDestination) },
         )
     }
 }
@@ -105,10 +111,9 @@ fun PremiumOnboardingScreen(
 private fun PremiumOnboardingScreen(
     viewModel: PremiumViewModel,
     navigateToChooseZodiacSign: () -> Unit,
-
+    navigateToTermOfUse: () -> Unit,
+    navigateToPrivacyPolicy: () -> Unit
 ) {
-    val smallScreen = LocalConfiguration.current.screenWidthDp.dp < 375.dp
-
     val subscribeForSale by viewModel.subscribeForSaleFlows.collectAsState(initial = null)
 
     Box(
@@ -128,10 +133,11 @@ private fun PremiumOnboardingScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
                     .padding(paddingValues)
+                    .offset(y = (-20).dp)
             ) {
                 PremiumInfo()
 
-                if (!smallScreen) Spacer(modifier = Modifier.height(32.dp))
+                Spacer(modifier = Modifier.height(10.dp))
 
                 Tariffs(
                     tariffType = viewModel.tariffType,
@@ -157,7 +163,10 @@ private fun PremiumOnboardingScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                Info()
+                Info(
+                    navigateToTermOfUse = navigateToTermOfUse,
+                    navigateToPrivacyPolicy = navigateToPrivacyPolicy
+                )
             }
         }
     }
@@ -172,12 +181,11 @@ private fun TopAppBar(
             IconButton(
                 onClick = navigateToChooseZodiacSign,
                 modifier = modifier
-                    .padding(start = TopAppBarDefaults.DefaultButtonHorizontalPaddingValues)
             ) {
                 Icon(
                     painter = painterResource(R.drawable.ic_close),
                     contentDescription = null,
-                    tint = INeverTheme.colors.white
+                    tint = INeverTheme.colors.primary
                 )
             }
         }
@@ -221,7 +229,7 @@ private fun PremiumButton(
     ) {
         Text(
             text = stringResource(R.string.try_free),
-            color = INeverTheme.colors.primary,
+            color = INeverTheme.colors.white,
             fontSize = 17.sp,
             lineHeight = 21.sp,
             fontWeight = FontWeight(600)
@@ -230,7 +238,10 @@ private fun PremiumButton(
 }
 
 @Composable
-private fun Info() {
+private fun Info(
+    navigateToTermOfUse: () -> Unit,
+    navigateToPrivacyPolicy: () -> Unit
+) {
     val context = LocalContext.current
 
     val intent = remember {
@@ -244,6 +255,16 @@ private fun Info() {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(26.dp)
     ) {
+        InfoItem(
+            text = R.string.privacy_policy_eng,
+            onClick = navigateToPrivacyPolicy
+        )
+
+        InfoItem(
+            text = R.string.term_of_use_eng,
+            onClick = navigateToTermOfUse
+        )
+
         InfoItem(
             text = R.string.restore,
             onClick = {
@@ -264,7 +285,7 @@ private fun InfoItem(
 ) {
     Text(
         text = stringResource(text),
-        color = INeverTheme.colors.white.copy(alpha = 0.50f),
+        color = INeverTheme.colors.primary.copy(alpha = 0.50f),
         fontSize = 12.sp,
         lineHeight = 14.sp,
         fontWeight = FontWeight(400),

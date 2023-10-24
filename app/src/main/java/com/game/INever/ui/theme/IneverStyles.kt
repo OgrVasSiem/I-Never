@@ -14,7 +14,10 @@ data class INeverStyles(
     val name2: TextStyle,
     val text1: TextStyle,
     val text2: TextStyle,
-    val button: TextStyle
+    val button: TextStyle,
+    val title: TextStyle,
+    val cards: TextStyle,
+    val nameCards: TextStyle
 ) {
 
     constructor() : this(
@@ -66,9 +69,27 @@ data class INeverStyles(
         ),
         button = TextStyle(
             fontSize = 16.sp,
-            fontWeight = FontWeight(300),
+            fontWeight = FontWeight(400),
             lineHeight = 20.sp,
             letterSpacing = 0.2f.sp
+        ),
+        title = TextStyle(
+            fontSize = 18.sp,
+            fontWeight = FontWeight(600),
+            lineHeight = 22.sp,
+            letterSpacing = (-0.41f).sp
+        ),
+        cards = TextStyle(
+            fontSize = 13.sp,
+            fontWeight = FontWeight(300),
+            lineHeight = 16.sp,
+            letterSpacing = (-0.24f).sp
+        ),
+        nameCards = TextStyle(
+            fontSize = 18.sp,
+            fontWeight = FontWeight(400),
+            lineHeight = 22.sp,
+            letterSpacing = (-0.24f).sp
         )
     )
 }

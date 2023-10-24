@@ -65,7 +65,7 @@ fun TariffDescription(
         Text(
             text = stringResource(text, currencyFormatter(currencyCode).format(price)),
             color = if (!isPremiumScreen) INeverTheme.colors.primary.copy(alpha = 0.70f)
-            else INeverTheme.colors.accent,
+            else INeverTheme.colors.primary,
             fontSize = 13.sp,
             lineHeight = 22.sp,
             fontWeight = FontWeight(400),

@@ -46,4 +46,24 @@ object DataStoreModule {
             )
         )
     }
+
+/*    @Singleton
+    @Provides
+    fun provideApplicationLanguageDataStore(@ApplicationContext context: Context): ApplicationLanguageDataStore {
+        return ApplicationLanguageDataStore(
+            preferencesDataStore = PreferenceDataStoreFactory.create(
+                produceFile = { context.preferencesDataStoreFile("applicationLanguage") }
+            )
+        )
+    }
+
+    @Singleton
+    @Provides
+    fun provideSystemRegionDataStore(@ApplicationContext context: Context): SystemRegionDataStore {
+        return SystemRegionDataStore(
+            preferencesDataStore = PreferenceDataStoreFactory.create(
+                produceFile = { context.preferencesDataStoreFile("systemRegion") }
+            )
+        )
+    }*/
 }

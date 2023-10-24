@@ -14,8 +14,13 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
+    /*@Inject
+    lateinit var languageManager: LanguageManager*/
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+       /* val systemRegion = languageManager.setLocale(this)*/
 
         WindowCompat.setDecorFitsSystemWindows(window, false)
         window.statusBarColor = Color.TRANSPARENT
@@ -24,7 +29,10 @@ class MainActivity : ComponentActivity() {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
 
         setContent {
-               CompositionLocalProvider(LocalActivity provides this@MainActivity) {
+            CompositionLocalProvider(
+                LocalActivity provides this@MainActivity,
+                /*LocalSystemRegion provides systemRegion*/
+            ) {
                 INeverApplication()
             }
         }
