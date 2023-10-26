@@ -4,11 +4,13 @@ import android.app.ActivityManager
 import android.app.Application
 import android.content.Context
 import android.os.Process
+import androidx.room.Room
 import coil.ImageLoader
 import coil.ImageLoaderFactory
 import coil.decode.SvgDecoder
 import com.amplitude.api.Amplitude
 import com.game.INever.core.premium.PremiumSynchronizationManager
+import com.game.INever.dataBase.AppDatabase
 import com.google.firebase.FirebaseApp
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
@@ -27,6 +29,10 @@ class INeverApplication : Application(), ImageLoaderFactory {
         val activityManager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
         val processInfo = activityManager.runningAppProcesses?.firstOrNull { it.pid == pid }
         return processInfo?.processName == packageName
+    }
+
+    val database: AppDatabase by lazy {
+        Room.databaseBuilder(this, AppDatabase::class.java, "app_db").build()
     }
 
     override fun onCreate() {

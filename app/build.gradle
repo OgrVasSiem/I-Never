@@ -178,4 +178,7 @@ dependencies {
     implementation 'androidx.core:core-splashscreen:1.0.1'
 
     implementation 'com.amplitude:android-sdk:2.39.4'
+
+    //TinderSwipe
+    implementation 'com.alexstyl.swipeablecard:swipeablecard:0.1.0'
 }

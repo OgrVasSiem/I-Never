@@ -118,7 +118,7 @@ private fun DefaultItem(
 
         Text(
             text = stringResource(text),
-            color = INeverTheme.colors.accent,
+            color = INeverTheme.colors.primary,
             fontSize = 15.sp,
             lineHeight = 20.sp,
             fontWeight = FontWeight(400)

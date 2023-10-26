@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -190,8 +191,9 @@ private fun PremiumHeader(premiumIsActive: Boolean) {
         Spacer(modifier = Modifier.height(7.dp))
 
         Icon(
-            painter = painterResource(R.drawable.img_premium_crown),
+            painter = painterResource(R.drawable.img_premium),
             contentDescription = null,
+            modifier = Modifier.size(130.dp),
             tint = Color.Unspecified,
         )
 
@@ -199,7 +201,7 @@ private fun PremiumHeader(premiumIsActive: Boolean) {
 
         Text(
             text = stringResource(text),
-            color = INeverTheme.colors.accent,
+            color = INeverTheme.colors.primary,
             fontWeight = FontWeight(600),
             fontSize = 29.sp,
             lineHeight = 36.sp,
@@ -212,7 +214,7 @@ private fun PremiumHeader(premiumIsActive: Boolean) {
 
             Text(
                 text = stringResource(R.string.thank_you_for_support),
-                color = INeverTheme.colors.white,
+                color = INeverTheme.colors.primary,
                 fontWeight = FontWeight(400),
                 fontSize = 15.sp,
                 lineHeight = 20.sp,
@@ -308,7 +310,7 @@ private fun SubscriptionButton(
             .fillMaxWidth()
             .defaultMinSize(minHeight = 60.dp)
             .clip(RoundedCornerShape(100.dp))
-            .background(brush = Brush.linearGradient(INeverTheme.gradients.accent2))
+            .background(INeverTheme.colors.accent)
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = rememberRipple(bounded = true)
@@ -330,7 +332,7 @@ private fun SubscriptionButton(
     ) {
         Text(
             text = stringResource(R.string.subscribe),
-            color = INeverTheme.colors.primary,
+            color = INeverTheme.colors.white,
             fontSize = 16.sp,
             lineHeight = 20.sp,
             fontWeight = FontWeight(600)
@@ -356,7 +358,7 @@ private fun InfoAboutPremium() {
             .defaultMinSize(minHeight = 60.dp)
             .fillMaxWidth()
             .clip(RoundedCornerShape(100.dp))
-            .border(1.dp, INeverTheme.colors.accent, RoundedCornerShape(100.dp))
+            .background(INeverTheme.colors.accent, RoundedCornerShape(100.dp))
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = rememberRipple(bounded = true)

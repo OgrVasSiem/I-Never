@@ -139,11 +139,11 @@ private fun SettingsScreen(
                     onClick = { context.startActivity(intentTelegram) }
                 )
 
-                DefaultSettingsButton(
+                /*DefaultSettingsButton(
                     text = R.string.share_application,
                     image = (R.drawable.ic_language),
-                    onClick = { /*navigateToApplicationLanguagesScreen*/ }
-                )
+                    onClick = { *//*navigateToApplicationLanguagesScreen*//* }
+                )*/
 
                 DefaultSettingsButton(
                     text = R.string.estimate_application,
