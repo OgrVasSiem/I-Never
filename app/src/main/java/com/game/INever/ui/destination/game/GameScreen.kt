@@ -1,13 +1,14 @@
 package com.game.INever.ui.destination.game
 
-import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -21,12 +22,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -40,6 +37,7 @@ import com.alexstyl.swipeablecard.ExperimentalSwipeableCardApi
 import com.alexstyl.swipeablecard.rememberSwipeableCardState
 import com.alexstyl.swipeablecard.swipableCard
 import com.game.INever.R
+import com.game.INever.core.rest.QuestionWithCard
 import com.game.INever.ui.RootNavGraph
 import com.game.INever.ui.RootNavigator
 import com.game.INever.ui.destinations.destinations.PremiumScreenDestination
@@ -92,8 +90,8 @@ fun GameScreenContent(
 fun SwipeCard(
     viewModel: GameViewModel = hiltViewModel()
 ) {
-    val questions = viewModel.questions
-    val states = List(questions.size) { rememberSwipeableCardState() }
+    val questionsWithCards = viewModel.questionsList.value
+    val states = List(questionsWithCards.size) { rememberSwipeableCardState() }
 
     Box(
         Modifier
@@ -101,7 +99,7 @@ fun SwipeCard(
             .fillMaxSize()
             .aspectRatio(1f)
     ) {
-        for (index in questions.indices) {
+        for (index in questionsWithCards.indices) {
             val state = states[index]
             if (state.swipedDirection == null) {
                 ProfileCard(
@@ -111,13 +109,11 @@ fun SwipeCard(
                             state = state,
                             blockedDirections = listOf(Direction.Down),
                             onSwiped = {
-                                viewModel.setNextQuestion()
-                                if (index == questions.size - 1) {
-                                    viewModel.currentPage.value += 1
-                                }
+                                viewModel.nextQuestion()
+
                             },
                         ),
-                    question = questions[index]
+                    questionWithCard = questionsWithCards[index]
                 )
             }
         }
@@ -175,23 +171,43 @@ fun TopAppBar(
 @Composable
 private fun ProfileCard(
     modifier: Modifier,
-    question: String?
+    questionWithCard: QuestionWithCard
 ) {
     Card(
-        modifier.background(Color.Red),
+        modifier = modifier
+            .background(Color.Red)
+            .fillMaxWidth(), // Заполняем максимальную ширину
         shape = RoundedCornerShape(16.dp)
     ) {
-        Box {
-            Column(Modifier.align(Alignment.BottomStart)) {
-                Text(
-                    text = question ?: "",
-                    color = INeverTheme.colors.accent,
-                    fontSize = 22.sp,
-                    fontWeight = FontWeight.Medium,
-                    modifier = Modifier.padding(10.dp)
-                )
-            }
+        Column(
+        ) {
+            Text(
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+                text = stringResource(id = R.string.title_game), // Текст вопроса
+                color = INeverTheme.colors.white,
+                fontSize = 22.sp,
+                fontWeight = FontWeight.Medium,
+            )
+
+            Spacer(modifier = Modifier.weight(1f)) // Пространство между текстами
+
+            Text(
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+                text = questionWithCard.question.text, // Текст вопроса
+                color = INeverTheme.colors.accent,
+                fontSize = 22.sp,
+                fontWeight = FontWeight.Medium,
+            )
+
+            Spacer(modifier = Modifier.weight(1f)) // Пространство между текстами
+
+            Text(
+                modifier = Modifier.align(Alignment.End),
+                text = questionWithCard.card.name, // Имя категории
+                color = INeverTheme.colors.accent,
+                fontSize = 22.sp,
+                fontWeight = FontWeight.Medium,
+            )
         }
     }
 }
-

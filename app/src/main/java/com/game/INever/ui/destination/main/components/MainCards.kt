@@ -1,6 +1,7 @@
 package com.game.INever.ui.destination.main.components
 
 import android.net.Uri
+import android.util.Log
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -30,7 +31,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.State
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
@@ -61,10 +61,10 @@ import com.game.INever.ui.utils.linearGradient
 @Composable
 fun MainCard(
     card: Card,
+    questionsCount: Map<Long, Int>,
     isPremiumActive: Boolean,
     rootNavigator: RootNavigator,
     cardState: CardState,
-    questions: State<List<Question>>
 ) {
     val isFreeTopic = card.freeTopic || isPremiumActive
 
@@ -95,9 +95,9 @@ fun MainCard(
     ) {
         CardsContent(
             card = card,
+            questionsCount = questionsCount,
             premiumIsActive = isPremiumActive,
             isSelected = cardState.isSelected.value,
-            questions = questions
         )
 
         UpgradeToPremiumDialog(
@@ -111,9 +111,9 @@ fun MainCard(
 @Composable
 fun CardsContent(
     card: Card,
+    questionsCount: Map<Long, Int>,
     premiumIsActive: Boolean,
     isSelected: Boolean,
-    questions: State<List<Question>>
 ) {
     Column(
         modifier = Modifier
@@ -125,8 +125,9 @@ fun CardsContent(
         Spacer(Modifier.height(12.dp))
 
         BottomContent(
-            questions,
-            card.freeTopic,
+            card = card,
+            questionsCount = questionsCount,
+            freeTopic = card.freeTopic,
             premiumIsActive = premiumIsActive,
             isSelected = isSelected
         )
@@ -169,7 +170,8 @@ private fun MainInfo(
 
 @Composable
 private fun BottomContent(
-    questions: State<List<Question>>,
+    card: Card,  // Добавьте это
+    questionsCount: Map<Long, Int>,
     freeTopic: Boolean,
     premiumIsActive: Boolean,
     isSelected: Boolean
@@ -180,12 +182,15 @@ private fun BottomContent(
         else -> R.drawable.img_premium_crown
     }
 
+    Log.d("Card.id", "${questionsCount.values.size}")
+
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = "$questions ${stringResource(id = R.string.cards)}",
+            text = "${questionsCount[card.id] ?: 0} ${stringResource(id = R.string.cards)}",
+
             style = INeverTheme.textStyles.cards,
             color = INeverTheme.colors.textColor
         )

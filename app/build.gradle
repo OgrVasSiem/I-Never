@@ -181,4 +181,7 @@ dependencies {
 
     //TinderSwipe
     implementation 'com.alexstyl.swipeablecard:swipeablecard:0.1.0'
+
+    implementation "androidx.paging:paging-runtime-ktx:3.2.1"
+
 }

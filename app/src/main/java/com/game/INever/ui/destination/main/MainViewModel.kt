@@ -9,9 +9,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.amplitude.api.Amplitude
 import com.game.INever.core.rest.Card
-import com.game.INever.core.rest.CardsRequest
 import com.game.INever.core.rest.Question
-import com.game.INever.core.rest.toCard
+import com.game.INever.dataBase.dao.CardDao
 import com.game.INever.dataBase.repositories.CardRepository
 import com.game.INever.dataStore.PremiumDataStore
 import com.game.INever.ui.destination.main.components.CardState
@@ -27,15 +26,15 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val premiumDataStore: PremiumDataStore,
-    private val cardApiService: CardsRequest,
-    private val cardRepository: CardRepository
+    private val cardRepository: CardRepository,
+    private val cardDao: CardDao
 ) : ViewModel() {
 
-    // Стейты
     private val _card = MutableStateFlow<List<Card>?>(null)
     val card: StateFlow<List<Card>?> = _card.asStateFlow()
 
-    private val _cardStates = MutableStateFlow<List<CardState>>(listOf())
+    private val _cardStates = MutableStateFlow<List<CardState>>(emptyList())
+
     val cardStates: StateFlow<List<CardState>> = _cardStates.asStateFlow()
 
     private val _questions = mutableStateOf(listOf<Question>())
@@ -45,22 +44,41 @@ class MainViewModel @Inject constructor(
     var premiumIsActive by mutableStateOf<Boolean?>(null)
         private set
 
+    private val _questionCounts = MutableStateFlow<Map<Long, Int>>(emptyMap())
+    val questionCounts: StateFlow<Map<Long, Int>> = _questionCounts.asStateFlow()
+    private suspend fun loadQuestionCountForCards() {
+        val counts = cardDao.getQuestionCountForCards()
+            .associateBy({ it.cardId + 6 }, { it.textCount })
 
-
+        _questionCounts.value = counts
+    }
     init {
         Amplitude.getInstance().logEvent("premium_screen")
 
         viewModelScope.launch {
+            loadQuestionCountForCards()
             fetchAndCacheCards()
             loadCardsFromDatabase()
             monitorPremiumStatus()
         }
     }
 
-
     private suspend fun loadCardsFromDatabase() {
+
         try {
-            _card.value = cardRepository.getAllCards()
+            val cardsFromDb = cardRepository.getAllCards()
+            _card.value = cardsFromDb
+
+            val updatedCardStates = cardsFromDb.map { card ->
+                CardState(
+                    cardData = mutableStateOf(card),
+                    isSelected = mutableStateOf(false),
+                    showDialog = mutableStateOf(false),
+
+                )
+            }
+            _cardStates.value = updatedCardStates
+
         } catch (e: Exception) {
             FirebaseCrashlytics.getInstance().recordException(e)
         }
@@ -68,14 +86,12 @@ class MainViewModel @Inject constructor(
 
     private suspend fun fetchAndCacheCards() {
         try {
-            val fetchedCards = cardApiService.infoGet().topics
-            cardRepository.insertAll(fetchedCards)
-            _card.value = fetchedCards.map { it.toCard() }
+            cardRepository.fetchAndSaveCards()
+            loadCardsFromDatabase()
         } catch (e: Exception) {
             FirebaseCrashlytics.getInstance().recordException(e)
         }
     }
-
     private suspend fun monitorPremiumStatus() {
         premiumDataStore.data.collectLatest {
             premiumEndDateInEpochMilli = it.expiryDateTime
@@ -92,16 +108,6 @@ class MainViewModel @Inject constructor(
             } ?: listOf()
             _cardStates.value = updatedCardStates
         }
-    }
-
-    fun toggleCardSelected(card: Card) {
-        val updatedStates = _cardStates.value.map {
-            if (it.cardData.value == card) {
-                it.isSelected.value = !it.isSelected.value
-            }
-            it
-        }
-        _cardStates.value = updatedStates
     }
 
     fun loadQuestionsForActiveCards(activeCards: List<Card>) {

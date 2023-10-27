@@ -6,5 +6,6 @@ import com.game.INever.core.rest.Card
 data class CardState(
     val cardData: MutableState<Card?>,
     val isSelected: MutableState<Boolean>,
-    val showDialog: MutableState<Boolean>
+    val showDialog: MutableState<Boolean>,
+
 )

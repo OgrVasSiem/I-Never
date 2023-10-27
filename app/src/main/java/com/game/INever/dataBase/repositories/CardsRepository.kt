@@ -8,12 +8,15 @@ import com.game.INever.core.rest.QuestionWithCard
 import com.game.INever.dataBase.dao.CardDao
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class CardRepository(private val cardDao: CardDao, private val cardsRequest: CardsRequest) {
+class CardRepository @Inject constructor(
+    private val cardDao: CardDao,
+    private val cardsRequest: CardsRequest) {
 
     suspend fun fetchAndSaveCards() = withContext(Dispatchers.IO) {
+        clearAllCards()
         val response = cardsRequest.infoGet()
-
         response.topics.forEach { networkCard ->
             saveNetworkCardToDb(networkCard)
         }
@@ -47,11 +50,16 @@ class CardRepository(private val cardDao: CardDao, private val cardsRequest: Car
         return cardDao.getAllCards()
     }
 
-    suspend fun getQuestionsWithCards(cardId: List<Long>): List<QuestionWithCard> {
-        return cardDao.getQuestionsWithCards(cardId)
+    suspend fun getQuestionsWithCards(ids: List<Long>): List<QuestionWithCard> {
+        return cardDao.getQuestionsWithCards(ids)
     }
 
     suspend fun getQuestionsForCard(cardId: Long): List<Question> {
         return cardDao.getQuestionsForCard(cardId)
+    }
+
+    suspend fun clearAllCards() {
+        cardDao.clearAllCards()
+        cardDao.clearAllQuestions()
     }
 }

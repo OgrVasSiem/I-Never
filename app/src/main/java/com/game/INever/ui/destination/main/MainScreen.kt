@@ -1,5 +1,6 @@
 package com.game.INever.ui.destination.main
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -76,10 +77,13 @@ fun MainScreenContent(
     viewModel: MainViewModel,
     rootNavigator: RootNavigator,
 ) {
+    val cards by viewModel.card.collectAsState()
+
     val cardStates by viewModel.cardStates.collectAsState()
 
     val activeCards = cardStates.filter { it.isSelected.value }.mapNotNull { it.cardData.value }
 
+    val questionCounts by viewModel.questionCounts.collectAsState()
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -101,28 +105,26 @@ fun MainScreenContent(
                     .padding(paddingValues)
             ) {
                 LazyColumn {
-                    val chunks = cardStates.chunked(2)
+                    val chunks = cards?.chunked(2) ?: listOf()
                     items(chunks) { chunk ->
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(bottom = 8.dp)
                         ) {
-                            chunk.forEach { cardState ->
+                            chunk.forEach { card ->
                                 Box(
                                     modifier = Modifier
                                         .weight(1f)
                                         .padding(8.dp)
                                 ) {
-                                    cardState.cardData.value?.let { card ->
-                                        MainCard(
-                                            card = card,
-                                            isPremiumActive = viewModel.premiumIsActive ?: false,
-                                            rootNavigator = rootNavigator,
-                                            cardState = cardState,
-                                            questions = viewModel.questions
-                                        )
-                                    }
+                                    MainCard(
+                                        card = card,
+                                        isPremiumActive = viewModel.premiumIsActive ?: false,
+                                        rootNavigator = rootNavigator,
+                                        cardState = cardStates.find { it.cardData.value == card }!!,
+                                        questionsCount = questionCounts
+                                    )
                                 }
                             }
                         }
@@ -151,7 +153,7 @@ fun MainScreenContent(
                                 rootNavigator.navigate(
                                     GameScreenDestination(
                                         navArgs = GameScreenNavArgs(
-                                            ids = activeCards.map { it.id }
+                                            ids = activeCards.joinToString(",") { it.id.toString() }
                                         )
                                     )
                                 )

@@ -4,5 +4,9 @@ import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 @Parcelize
 data class GameScreenNavArgs(
-    val ids: List<Long>
-) : Parcelable
+    val ids: String
+) : Parcelable {
+    fun getIdsList(): List<Long> {
+        return ids.split(",").map { it.toLong() }
+    }
+}

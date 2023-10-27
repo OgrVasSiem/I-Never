@@ -15,8 +15,6 @@ fun getSubscriptionInfo(
     basicPurchaseDetails: ProductDetails?,
     tag: String
 ): SubscriptionInfo {
-    Log.d("tag", "${basicPurchaseDetails?.subscriptionOfferDetails?.map { it.basePlanId }}")
-
     val offerDetails =
         basicPurchaseDetails?.subscriptionOfferDetails?.firstOrNull { it.basePlanId.contains(tag) }
 
