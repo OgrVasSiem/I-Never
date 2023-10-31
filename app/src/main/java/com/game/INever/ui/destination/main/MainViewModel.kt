@@ -40,7 +40,7 @@ class MainViewModel @Inject constructor(
     private val _questions = mutableStateOf(listOf<Question>())
     val questions: State<List<Question>> = _questions
 
-    var premiumEndDateInEpochMilli by mutableLongStateOf(0L)
+    private var premiumEndDateInEpochMilli by mutableLongStateOf(0L)
     var premiumIsActive by mutableStateOf<Boolean?>(null)
         private set
 
@@ -48,7 +48,7 @@ class MainViewModel @Inject constructor(
     val questionCounts: StateFlow<Map<Long, Int>> = _questionCounts.asStateFlow()
     private suspend fun loadQuestionCountForCards() {
         val counts = cardDao.getQuestionCountForCards()
-            .associateBy({ it.cardId + 6 }, { it.textCount })
+            .associateBy({ it.cardId}, { it.textCount })
 
         _questionCounts.value = counts
     }

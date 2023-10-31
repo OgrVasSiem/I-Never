@@ -1,6 +1,5 @@
 package com.game.INever.ui.destination.main
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -65,6 +64,15 @@ fun MainScreen(
                 RulesScreenDestination()
             )
         },
+        abc = { ids: List<Long> ->
+            rootNavigator.navigate(
+                GameScreenDestination(
+                    navArgs = GameScreenNavArgs(
+                        ids = ids.toLongArray()
+                    )
+                )
+            )
+        },
         viewModel = viewModel,
         rootNavigator = rootNavigator,
     )
@@ -74,6 +82,7 @@ fun MainScreen(
 fun MainScreenContent(
     navigateToSettingsScreen: () -> Unit,
     navigateToRulesScreen: () -> Unit,
+    abc: (ids: List<Long>) -> Unit,
     viewModel: MainViewModel,
     rootNavigator: RootNavigator,
 ) {
@@ -150,13 +159,7 @@ fun MainScreenContent(
                                 interactionSource = MutableInteractionSource(),
                                 indication = rememberRipple(bounded = false),
                             ) {
-                                rootNavigator.navigate(
-                                    GameScreenDestination(
-                                        navArgs = GameScreenNavArgs(
-                                            ids = activeCards.joinToString(",") { it.id.toString() }
-                                        )
-                                    )
-                                )
+                                abc(activeCards.map { it.id })
                             },
                         contentAlignment = Alignment.Center
                     ) {

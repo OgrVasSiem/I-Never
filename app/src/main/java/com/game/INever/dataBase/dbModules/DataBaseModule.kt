@@ -3,6 +3,8 @@ package com.game.INever.dataBase.dbModules
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.room.Room
+import androidx.room.RoomDatabase
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.game.INever.dataBase.AppDatabase
 import com.game.INever.dataBase.dao.CardDao
 import dagger.Module
@@ -18,7 +20,15 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase {
-        return Room.databaseBuilder(context, AppDatabase::class.java, "app_db").build()
+        return Room.databaseBuilder(context, AppDatabase::class.java, "app_db")
+            .addCallback(object : RoomDatabase.Callback() {
+                override fun onCreate(db: SupportSQLiteDatabase) {
+                    super.onCreate(db)
+
+
+                }
+            })
+            .build()
     }
 
     @Provides

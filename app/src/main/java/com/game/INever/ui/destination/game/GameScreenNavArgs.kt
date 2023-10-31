@@ -4,9 +4,20 @@ import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 @Parcelize
 data class GameScreenNavArgs(
-    val ids: String
+    val ids: LongArray
 ) : Parcelable {
-    fun getIdsList(): List<Long> {
-        return ids.split(",").map { it.toLong() }
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as GameScreenNavArgs
+
+        if (!ids.contentEquals(other.ids)) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return ids.contentHashCode()
     }
 }

@@ -1,10 +1,8 @@
 package com.game.INever.core.rest
 
-import androidx.room.ColumnInfo
-import androidx.room.Embedded
 import androidx.room.Entity
+import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
-import androidx.room.Relation
 
 data class CardsResponse(
     val topics: List<NetworkCard>
@@ -18,7 +16,7 @@ data class NetworkCard(
     val questions: List<String>
 )
 
-@Entity
+@Entity(tableName = "cards")
 data class Card(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0L,
@@ -29,11 +27,21 @@ data class Card(
     val alertImage: String,
 )
 
-@Entity
+@Entity(
+    tableName = "questions",
+    foreignKeys = [
+        ForeignKey(
+            entity = Card::class,
+            parentColumns = arrayOf("id"),
+            childColumns = arrayOf("cardId"),
+            onDelete = ForeignKey.SET_NULL
+        )
+    ]
+)
 data class Question(
     @PrimaryKey(autoGenerate = true)
-    val id: Long = 0L,  // Используем один и тот же идентификатор
-    val cardId: Long,   // Этот идентификатор будет ссылаться на идентификатор карточки
+    val id: Long = 0L,
+    val cardId: Long,
     val text: String,
 )
 
@@ -48,17 +56,14 @@ fun NetworkCard.toCard(): Card {
     )
 }
 
-data class QuestionWithCard(
-    @Embedded
-    val question: Question,
-    @Relation(parentColumn = "cardId", entityColumn = "id")
-    val card: Card
-)
-
 data class QuestionCount(
     val cardId: Long,
     val textCount: Int
 )
 
+data class GameModel(
+    val categoryName: String,
+    val question: String,
+)
 
 

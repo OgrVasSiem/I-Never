@@ -2,17 +2,19 @@ package com.game.INever.dataBase.repositories
 
 import com.game.INever.core.rest.Card
 import com.game.INever.core.rest.CardsRequest
+import com.game.INever.core.rest.GameModel
 import com.game.INever.core.rest.NetworkCard
 import com.game.INever.core.rest.Question
-import com.game.INever.core.rest.QuestionWithCard
 import com.game.INever.dataBase.dao.CardDao
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class CardRepository @Inject constructor(
     private val cardDao: CardDao,
-    private val cardsRequest: CardsRequest) {
+    private val cardsRequest: CardsRequest
+) {
 
     suspend fun fetchAndSaveCards() = withContext(Dispatchers.IO) {
         clearAllCards()
@@ -50,10 +52,6 @@ class CardRepository @Inject constructor(
         return cardDao.getAllCards()
     }
 
-    suspend fun getQuestionsWithCards(ids: List<Long>): List<QuestionWithCard> {
-        return cardDao.getQuestionsWithCards(ids)
-    }
-
     suspend fun getQuestionsForCard(cardId: Long): List<Question> {
         return cardDao.getQuestionsForCard(cardId)
     }
@@ -61,5 +59,13 @@ class CardRepository @Inject constructor(
     suspend fun clearAllCards() {
         cardDao.clearAllCards()
         cardDao.clearAllQuestions()
+    }
+
+    suspend fun getPaginatedQuestionsWithCards(
+        idsList: List<Long>,
+    ): Flow<List<GameModel>> {
+        return withContext(Dispatchers.IO) {
+            cardDao.getPaginatedQuestionsWithCards(idsList)
+        }
     }
 }

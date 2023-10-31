@@ -83,7 +83,6 @@ ksp {
     arg("compose-destinations.codeGenPackageName", "com.game.INever.ui.destinations")
 }
 
-
 dependencies {
     def accompanistVersion = "0.32.0"
     def roomVersion = "2.5.2"
@@ -181,7 +180,7 @@ dependencies {
 
     //TinderSwipe
     implementation 'com.alexstyl.swipeablecard:swipeablecard:0.1.0'
+    implementation "androidx.constraintlayout:constraintlayout-compose:1.0.1"
 
     implementation "androidx.paging:paging-runtime-ktx:3.2.1"
-
 }
