@@ -1,9 +1,13 @@
 package com.game.INever.ui.destination.game
 
+import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -30,17 +34,21 @@ class GameViewModel @Inject constructor(
     val displayList by derivedStateOf { questionsListNew.take(4) }
     private val _displayList = MutableStateFlow<List<GameModel>>(emptyList())
 
-    private val _allCardsLoaded = MutableStateFlow(false)
-    val allCardsLoaded = _allCardsLoaded.asStateFlow()
-
-    private var _currentIndex = MutableStateFlow(0)
-    var currentIndex = _currentIndex.asStateFlow()
+    val _currentIndex = mutableStateOf(0)
+    var currentIndex: State<Int> = _currentIndex
 
     private var _colorIndex = MutableStateFlow(0)
     val colorIndex = _colorIndex.asStateFlow()
 
 
     private var offset = 0
+
+    val cardColors = listOf(
+        Color(0xFFE57373), Color(0xFFF06292), Color(0xFFBA68C8), Color(0xFF9575CD),
+        Color(0xFF7986CB), Color(0xFF64B5F6), Color(0xFF4FC3F7), Color(0xFF4DD0E1),
+        Color(0xFF4DB6AC), Color(0xFF81C784), Color(0xFFAED581), Color(0xFFFFD54F),
+        Color(0xFFFFB74D), Color(0xFFFF8A65), Color(0xFFA1887F), Color(0xFF90A4AE)
+    )
 
     init {
         viewModelScope.launch {
@@ -52,18 +60,28 @@ class GameViewModel @Inject constructor(
         cardRepository.getPaginatedQuestionsWithCards(
             idsList = idsList.toList(),
         ).collectLatest { newQuestions ->
-            questionsListNew = questionsListNew + newQuestions
-            _displayList.value = questionsListNew.take(4)
-            offset += newQuestions.size
-            _currentIndex.value = _displayList.value.size - 1
 
+            val questionsWithColor = newQuestions.mapIndexed { index, gameModel ->
+                val colorInt = cardColors[(_colorIndex.value + index) % cardColors.size].toArgb()
+                gameModel.copy(colorInt = colorInt)
+            }
+
+            questionsListNew = questionsListNew + questionsWithColor
+            _displayList.value = questionsListNew.take(4)
+            offset += questionsWithColor.size
+            _currentIndex.value = _displayList.value.size - 1
+            _colorIndex.value = (_colorIndex.value + questionsWithColor.size) % cardColors.size
         }
     }
+    val baseOffsets = listOf(0.dp, (-40).dp, (-80).dp, (-120).dp)
+
+    val offsets = List(4) { i -> mutableStateOf(baseOffsets[i]) }
 
     fun onCardSwiped() {
-        questionsListNew = questionsListNew.drop(1)
-        _displayList.value = questionsListNew.take(4)
-        _colorIndex.value = (_colorIndex.value + 1) % cardColors.size  // cardColors - это ваш список цветов
+        viewModelScope.launch {
+            // Удаление верхней карты
+            questionsListNew = questionsListNew.drop(1)
+        }
     }
 
 }

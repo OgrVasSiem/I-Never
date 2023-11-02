@@ -1,58 +1,74 @@
 package com.game.INever.ui.swipe
 
+
 import android.util.Log
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FractionalThreshold
 import androidx.compose.material.ThresholdConfig
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.game.INever.core.rest.GameModel
+import com.game.INever.ui.destination.game.GameViewModel
 import com.game.INever.ui.destination.game.ProfileCard
+import kotlinx.coroutines.flow.SharedFlow
+
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun CardStack(
     modifier: Modifier = Modifier,
-    items: List<GameModel>,
+    viewModel: GameViewModel,
+    items: List<GameModel> = viewModel.displayList,
     thresholdConfig: (Float, Float) -> ThresholdConfig = { _, _ -> FractionalThreshold(0.2f) },
     velocityThreshold: Dp = 125.dp,
-    onSwipeLeft: (item: GameModel) -> Unit = {},
-    onSwipeRight: (item: GameModel) -> Unit = {},
-    onEmptyStack: (lastItem: GameModel) -> Unit = {},
-    currentIndex: Int,
     onCardSwiped: () -> Unit,
-    backgroundColor: Color
+    offsets: List<MutableState<Dp>>,
 ) {
     val cardStackController = rememberCardStackController()
 
+    val animatedOffsets = viewModel.offsets.map { offset ->
+        animateDpAsState(targetValue = offset.value).value
+    }
+
+
     cardStackController.onSwipeLeft = {
-        onSwipeLeft(items[currentIndex])
         onCardSwiped()
     }
 
     cardStackController.onSwipeRight = {
-        onSwipeRight(items[currentIndex])
         onCardSwiped()
     }
 
-    Log.d("index", "a = $items")
+    Log.d("ListQuestion", "a = $items")
 
-    Log.e("index", "b = $currentIndex")
-
+    Log.d("ListQuestion", "a = $items")
     ConstraintLayout(
         modifier = modifier
             .fillMaxSize()
@@ -72,24 +88,48 @@ fun CardStack(
                 )
                 .fillMaxHeight()
         ) {
-            items.asReversed().forEachIndexed { index, questionWithCard ->
-                ProfileCard(
-                    modifier = Modifier
-                        .moveTo(
-                            x = if (index == currentIndex) cardStackController.offsetX.value else 0f,
-                            y = if (index == currentIndex) cardStackController.offsetY.value else 0f
-                        )
-                        .visible(visible = index == currentIndex || index == currentIndex - 1)  // Изменяем условие для отображения карточек
+            items.asReversed().forEach { questionWithCard ->
+                key(questionWithCard.question) {
 
-                        .graphicsLayer(
-                            rotationZ = if (index == currentIndex) cardStackController.rotation.value else 0f,
-                            scaleX = if (index < currentIndex) cardStackController.scale.value else 1f,
-                            scaleY = if (index < currentIndex) cardStackController.scale.value else 1f
-                        ),
-                    questionWithCard = questionWithCard,
-                    index = backgroundColor
-                )
+                    val cardIndex = items.indexOf(questionWithCard)
+
+                    val offsetY by animateDpAsState(
+                        targetValue = offsets[cardIndex].value,
+                        label = "offsetYAnimation"
+                    )
+
+                    val scaleFactor by animateFloatAsState(
+                        targetValue = when (cardIndex) {
+                            0 -> 1f
+                            1 -> 0.9f
+                            2 -> 0.8f
+                            3 -> 0.7f
+                            else -> 1f
+                        },
+                        label = "scaleAnimation"
+                    )
+
+                    AnimatedVisibility(
+                        visible = items.contains(questionWithCard),
+                        enter = fadeIn() + slideInVertically(),
+                        exit = fadeOut()
+                    ) {
+                        ProfileCard(
+                            modifier = Modifier
+                                .align(Alignment.TopCenter)
+                                .offset(y = offsetY)
+                                .scale(scaleFactor)
+                                .moveTo(
+                                    x = if (cardIndex == 0) cardStackController.offsetX.value else 0f,
+                                    y = if (cardIndex == 0) cardStackController.offsetY.value else 0f
+                                ),
+                            questionWithCard = questionWithCard
+                        )
+                    }
+                }
             }
         }
     }
 }
+
+

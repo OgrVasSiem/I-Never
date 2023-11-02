@@ -1,5 +1,6 @@
 package com.game.INever.core.rest
 
+import androidx.compose.ui.graphics.Color
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
@@ -64,6 +65,7 @@ data class QuestionCount(
 data class GameModel(
     val categoryName: String,
     val question: String,
+    val colorInt: Int?
 )
 
 

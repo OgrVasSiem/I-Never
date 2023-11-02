@@ -11,7 +11,10 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 open class CardStackController(
     val scope: CoroutineScope,
@@ -31,11 +34,14 @@ open class CardStackController(
 
     var onSwipeLeft: () -> Unit = {}
     var onSwipeRight: () -> Unit = {}
-
     fun swipeLeft() {
         scope.apply {
             launch {
                 offsetX.animateTo(-screenWidth, animationSpec)
+
+
+
+                scale.animateTo(1f, animationSpec)
 
                 onSwipeLeft()
 
@@ -66,6 +72,10 @@ open class CardStackController(
         scope.apply {
             launch {
                 offsetX.animateTo(screenWidth, animationSpec)
+
+
+
+                scale.animateTo(1f, animationSpec)
 
                 onSwipeRight()
 

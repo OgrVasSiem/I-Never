@@ -34,6 +34,15 @@ interface CardDao {
     @Query("SELECT cardId, COUNT(id) AS textCount FROM questions GROUP BY cardId")
     suspend fun getQuestionCountForCards(): List<QuestionCount>
 
-   @Query("SELECT cards.name AS categoryName, questions.text AS question FROM cards INNER JOIN questions ON questions.cardId = cards.id WHERE cardId IN (:ids) ORDER BY RANDOM()")
-   fun getPaginatedQuestionsWithCards(ids: List<Long>): Flow<List<GameModel>>
+    @Query("""
+   SELECT cards.name AS categoryName, 
+          questions.text AS question, 
+          null AS colorInt
+   FROM cards 
+   INNER JOIN questions ON questions.cardId = cards.id 
+   WHERE cardId IN (:ids) 
+   ORDER BY RANDOM()""")
+    fun getPaginatedQuestionsWithCards(ids: List<Long>): Flow<List<GameModel>>
+
+
 }
