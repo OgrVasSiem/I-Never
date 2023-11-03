@@ -12,11 +12,11 @@ plugins {
 }
 
 android {
-    namespace 'com.game.INever'
+    namespace 'com.foresko.game'
     compileSdk 34
 
     defaultConfig {
-        applicationId "com.game.INever"
+        applicationId "com.foresko.game"
         minSdk 24
         targetSdk 34
         versionCode 6
@@ -80,7 +80,7 @@ kapt {
 }
 
 ksp {
-    arg("compose-destinations.codeGenPackageName", "com.game.INever.ui.destinations")
+    arg("compose-destinations.codeGenPackageName", "com.foresko.game.ui.destinations")
 }
 
 dependencies {
@@ -167,8 +167,19 @@ dependencies {
     //Arrow
     implementation("io.arrow-kt:arrow-core:1.0.1")
 
+    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0-beta01"
+
+
     //DataStore
     implementation "androidx.datastore:datastore-preferences:1.0.0"
+
+    //AdMob
+    implementation 'com.google.android.gms:play-services-ads:22.5.0'
+    //Appodeal
+    implementation('com.appodeal.ads:sdk:3.0.2.0') {
+        exclude group: 'com.appodeal.ads.sdk.networks', module: 'adcolony'
+        exclude group: 'com.appodeal.ads.sdk.networks', module: 'facebook'
+    }
 
     //LottieAnimation
     implementation "com.airbnb.android:lottie-compose:6.0.0"
@@ -183,4 +194,5 @@ dependencies {
     implementation "androidx.constraintlayout:constraintlayout-compose:1.0.1"
 
     implementation "androidx.paging:paging-runtime-ktx:3.2.1"
+
 }
