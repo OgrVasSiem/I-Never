@@ -32,7 +32,6 @@ class Ads(
                 }
 
                 override fun onAdLoaded(ad: InterstitialAd) {
-                    Log.d("ads", "Ad was loaded.")
 
                     interstitialAd = ad
                 }

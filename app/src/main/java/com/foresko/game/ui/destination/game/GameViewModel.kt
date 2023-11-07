@@ -18,7 +18,6 @@ import com.foresko.game.core.ads.Ads
 import com.foresko.game.core.rest.GameModel
 import com.foresko.game.dataBase.repositories.CardRepository
 import com.foresko.game.dataStore.PremiumDataStore
-import com.foresko.game.ui.destination.main.components.CardState
 import com.foresko.game.ui.destinations.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,6 +25,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.math.min
 
 @HiltViewModel
 class GameViewModel @Inject constructor(
@@ -44,7 +44,13 @@ class GameViewModel @Inject constructor(
 
     val currentQuestionNumber = mutableIntStateOf(1)
 
-    val displayList by derivedStateOf { questionsListNew.take(4) }
+    val displayList by derivedStateOf {
+        if (fromAd) {
+            questionsListNew.take(3)
+        } else {
+            questionsListNew.take(4)
+        }
+    }
     private val _displayList = MutableStateFlow<List<GameModel>>(emptyList())
 
     private val _currentIndex = mutableIntStateOf(0)
@@ -64,12 +70,18 @@ class GameViewModel @Inject constructor(
 
     private var premiumEndDateInEpochMilli by mutableLongStateOf(0L)
 
+    private val fromAd = savedStateHandle.get<Boolean>("fromAd") ?: false
+
     private val cardColors = listOf(
         Color(0xFFF4413C), Color(0xFF9968FF), Color(0xFFFEC133), Color(0xFF65B969),
         Color(0xFF3C64F4), Color(0xFFFF932F), Color(0xFFF03CF4), Color(0xFF5FBAC0),
         Color(0xFF3C43F4), Color(0xFFF57600), Color(0xFF2FB101), Color(0xFF599BFE),
         Color(0xFFFFB74D), Color(0xFF9C2EAE), Color(0xFFDB328E), Color(0xFF25B1D0)
     )
+
+    val isLastCard = derivedStateOf {
+        questionsListNew.isNotEmpty() && currentQuestionNumber.intValue >= getInitialQuestionCount()
+    }
 
     init {
         viewModelScope.launch {
@@ -85,7 +97,6 @@ class GameViewModel @Inject constructor(
         }
     }
 
-
     private suspend fun loadCards() {
         cardRepository.getPaginatedQuestionsWithCards(
             idsList = idsList.toList(),
@@ -97,10 +108,18 @@ class GameViewModel @Inject constructor(
             }
 
             if (initialQuestionCount.intValue == 0) {
-                initialQuestionCount.intValue = questionsWithColor.size
+                initialQuestionCount.intValue = if (fromAd) {
+                    min(questionsWithColor.size, 3)
+                } else {
+                    questionsWithColor.size
+                }
             }
 
-            questionsListNew = questionsListNew + questionsWithColor
+            questionsListNew = if (fromAd) {
+                questionsWithColor.take(3)
+            } else {
+                questionsWithColor
+            }
             _displayList.value = questionsListNew.take(4)
             offset += questionsWithColor.size
             _currentIndex.intValue = _displayList.value.size - 1
@@ -108,19 +127,22 @@ class GameViewModel @Inject constructor(
         }
     }
 
+
     fun getInitialQuestionCount(): Int {
         return initialQuestionCount.intValue
     }
 
     fun onCardSwiped(activity: Activity) {
-        viewModelScope.launch {
-            questionsListNew = questionsListNew.drop(1)
-            currentQuestionNumber.intValue += 1
+        if (currentQuestionNumber.intValue < getInitialQuestionCount()) {
+            viewModelScope.launch {
+                questionsListNew = questionsListNew.drop(1)
+                currentQuestionNumber.intValue += 1
 
-            swipeCount++
-            /*if (swipeCount % 10 == 0) {
-                showAds(activity)
-            }*/
+                swipeCount++
+                if (swipeCount % 10 == 0) {
+                    showAds(activity)
+                }
+            }
         }
     }
 

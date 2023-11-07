@@ -1,5 +1,6 @@
 package com.foresko.game.ui.destination.game
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -20,6 +21,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,6 +43,8 @@ import com.foresko.game.core.rest.GameModel
 import com.foresko.game.ui.RootNavGraph
 import com.foresko.game.ui.RootNavigator
 import com.foresko.game.ui.destinations.destinations.PremiumScreenDestination
+import com.foresko.game.ui.destinations.destinations.PrivacyPolicyScreenDestination
+import com.foresko.game.ui.destinations.destinations.TermOfUseScreenDestination
 import com.foresko.game.ui.swipe.CardStack
 import com.foresko.game.ui.theme.INeverTheme
 import com.foresko.game.utils.LocalActivity
@@ -62,7 +70,25 @@ fun GameScreenContent(
     rootNavigator: RootNavigator,
     viewModel: GameViewModel
 ) {
+    val isLastCard by viewModel.isLastCard
+
     val activity = LocalActivity.current
+
+    if (isLastCard) {
+        UpgradeToPremiumDialog(
+            showDialog = rememberSaveable { mutableStateOf(true) },
+            navigateToPrivacyPolicy = { rootNavigator.navigate(PrivacyPolicyScreenDestination) },
+            navigateToTermOfUse = { rootNavigator.navigate(TermOfUseScreenDestination) },
+        )
+    }
+
+    LaunchedEffect(isLastCard) {
+        Log.d("GameScreenContent", "UpgradeToPremiumDialog visibility changed: $isLastCard")
+        if (isLastCard) {
+            // Здесь можно добавить дополнительную логику, если нужно что-то сделать именно при показе диалога
+            Log.d("GameScreenContent", "UpgradeToPremiumDialog is shown due to last card reached.")
+        }
+    }
 
     Box(modifier = Modifier.fillMaxSize()) {
         Scaffold(

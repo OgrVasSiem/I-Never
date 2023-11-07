@@ -64,7 +64,7 @@ fun CardStack(
                 .draggableStack(
                     controller = cardStackController,
                     thresholdConfig = thresholdConfig,
-                    velocityThreshold = velocityThreshold
+                    velocityThreshold = velocityThreshold,
                 )
                 .fillMaxHeight()
         ) {

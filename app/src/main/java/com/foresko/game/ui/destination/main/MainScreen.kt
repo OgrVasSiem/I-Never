@@ -44,6 +44,7 @@ import com.foresko.game.ui.destinations.destinations.GameScreenDestination
 import com.foresko.game.ui.destinations.destinations.RulesScreenDestination
 import com.foresko.game.ui.destinations.destinations.SettingsScreenDestination
 import com.foresko.game.ui.theme.INeverTheme
+import com.foresko.game.utils.LocalActivity
 import com.ramcosta.composedestinations.annotation.Destination
 
 @Composable
@@ -51,7 +52,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 @RootNavGraph
 fun MainScreen(
     viewModel: MainViewModel = hiltViewModel(),
-    rootNavigator: RootNavigator,
+    rootNavigator: RootNavigator
 ) {
     MainScreenContent(
         navigateToSettingsScreen = {
@@ -64,17 +65,17 @@ fun MainScreen(
                 RulesScreenDestination()
             )
         },
-        navigateToGameScreen = { ids: List<Long> ->
+        navigateToGameScreen = { ids: List<Long>, fromAd: Boolean ->
             rootNavigator.navigate(
                 GameScreenDestination(
                     navArgs = GameScreenNavArgs(
-                        ids = ids.toLongArray()
+                        ids = ids.toLongArray(),
+                        fromAd = fromAd
                     )
                 )
             )
         },
         viewModel = viewModel,
-        rootNavigator = rootNavigator,
     )
 }
 
@@ -82,9 +83,8 @@ fun MainScreen(
 fun MainScreenContent(
     navigateToSettingsScreen: () -> Unit,
     navigateToRulesScreen: () -> Unit,
-    navigateToGameScreen: (ids: List<Long>) -> Unit,
+    navigateToGameScreen: (ids: List<Long>, fromAd: Boolean) -> Unit,
     viewModel: MainViewModel,
-    rootNavigator: RootNavigator,
 ) {
     val cards by viewModel.card.collectAsState()
 
@@ -93,6 +93,8 @@ fun MainScreenContent(
     val activeCards = cardStates.filter { it.isSelected.value }.mapNotNull { it.cardData.value }
 
     val questionCounts by viewModel.questionCounts.collectAsState()
+
+    val activity = LocalActivity.current
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -130,9 +132,13 @@ fun MainScreenContent(
                                     MainCard(
                                         card = card,
                                         isPremiumActive = viewModel.premiumIsActive ?: false,
-                                        rootNavigator = rootNavigator,
                                         cardState = cardStates.find { it.cardData.value == card }!!,
-                                        questionsCount = questionCounts
+                                        questionsCount = questionCounts,
+                                        showAds = {
+                                            viewModel.showAds(activity) {
+                                                navigateToGameScreen(listOf(card.id), true)
+                                            }
+                                        },
                                     )
                                 }
                             }
@@ -159,7 +165,7 @@ fun MainScreenContent(
                                 interactionSource = MutableInteractionSource(),
                                 indication = rememberRipple(bounded = false),
                             ) {
-                                navigateToGameScreen(activeCards.map { it.id })
+                                navigateToGameScreen(activeCards.map { it.id }, false)
                             },
                         contentAlignment = Alignment.Center
                     ) {

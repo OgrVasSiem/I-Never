@@ -1,5 +1,6 @@
 package com.foresko.game.ui.destination.main
 
+import android.app.Activity
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
@@ -8,6 +9,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.amplitude.api.Amplitude
+import com.foresko.game.core.ads.Ads
 import com.foresko.game.core.rest.Card
 import com.foresko.game.core.rest.Question
 import com.foresko.game.dataBase.dao.CardDao
@@ -27,7 +29,8 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     private val premiumDataStore: PremiumDataStore,
     private val cardRepository: CardRepository,
-    private val cardDao: CardDao
+    private val cardDao: CardDao,
+    private val ads: Ads,
 ) : ViewModel() {
 
     private val _card = MutableStateFlow<List<Card>?>(null)
@@ -60,6 +63,7 @@ class MainViewModel @Inject constructor(
             fetchAndCacheCards()
             loadCardsFromDatabase()
             monitorPremiumStatus()
+            initAds()
         }
     }
 
@@ -117,4 +121,16 @@ class MainViewModel @Inject constructor(
             }
         }
     }
+
+    private fun initAds() {
+        if (ads.interstitialAd == null) {
+            ads.initAds()
+        }
+    }
+    fun showAds(activity: Activity, onAdClosed: () -> Unit) {
+        ads.showAd(activity = activity) {
+            onAdClosed()
+        }
+    }
+
 }
