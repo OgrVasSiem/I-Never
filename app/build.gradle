@@ -9,18 +9,19 @@ plugins {
     id "dagger.hilt.android.plugin"
     id 'com.google.devtools.ksp'
     id 'kotlin-parcelize'
+    id("com.apollographql.apollo3").version("3.7.0")
 }
 
 android {
-    namespace 'com.foresko.game'
+    namespace 'com.foresko.gamenever'
     compileSdk 34
 
     defaultConfig {
-        applicationId "com.foresko.game"
+        applicationId "com.foresko.gamenever"
         minSdk 24
         targetSdk 34
         versionCode 6
-        versionName "1.0.6"
+        versionName "1.0.7"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -28,10 +29,23 @@ android {
         }
     }
 
+    flavorDimensions "store"
+
+    productFlavors {
+        INeverGooglePlayStore {
+            dimension "store"
+        }
+
+        INeverRuStore {
+            dimension "store"
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.debug
         }
     }
     compileOptions {
@@ -79,11 +93,26 @@ kapt {
     correctErrorTypes = true
 }
 
+apollo {
+    packageName.set("com.foresko.gamenever.graphql")
+
+    schemaFile.set(file("src/main/graphql/com/foresko/gamenever/schema.graphqls"))
+
+    customScalarsMapping.set(
+            [
+                    "Decimal": "java.math.BigDecimal",
+                    "DateTime": "java.time.OffsetDateTime"
+            ]
+
+    )
+}
+
 ksp {
-    arg("compose-destinations.codeGenPackageName", "com.foresko.game.ui.destinations")
+    arg("compose-destinations.codeGenPackageName", "com.foresko.gamenever.ui.destinations")
 }
 
 dependencies {
+    implementation 'com.google.android.gms:play-services-auth:20.7.0'
     def accompanistVersion = "0.32.0"
     def roomVersion = "2.5.2"
     def composeUiVersion = "1.5.3"
@@ -168,7 +197,6 @@ dependencies {
     implementation("io.arrow-kt:arrow-core:1.0.1")
 
     implementation "androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0-beta01"
-
 
     //DataStore
     implementation "androidx.datastore:datastore-preferences:1.0.0"

@@ -22,8 +22,16 @@
     <string name="trial_period_three_months">Попробуйте 3 дня бесплатно, потом %1$s/3 месяц.\nПри оплате с Google Play.</string>
     <string name="month_1">Месяц</string>
     <string name="month_2">Месяца</string>
+    <string name="subscription_with_google_play">Подписаться с Google Play</string>
     <string name="month_3">Месяцев</string>
     <string name="year">Год</string>
+    <string name="premium_access_on_one_year_with_trial_period">Попробуйте 7 дней бесплатно, потом %1$s\u00A0/\u00A0год \n при оплате с Google Play</string>
+    <string name="premium_access_on_one_month">Premium-доступ на 1 месяц</string>
+    <string name="premium_access_on_three_months">Premium-доступ на 3 месяцa</string>
+    <string name="premium_access_on_one_year">Premium-доступ на 1 год</string>
+    <string name="premium_access_on_month_long">Premium-доступ на 1 месяц.\nОтмена в любой момент в Google Play.</string>
+    <string name="premium_access_on_three_months_long">Premium-доступ на 3 месяца.\nОтмена в любой момент в Google Play.</string>
+    <string name="premium_access_on_one_year_long">Premium-доступ на 1 год.\nОтмена в любой момент в Google Play.</string>
     <string name="discount">discount <![CDATA[<b>]]>%1$s<![CDATA[</b>]]> %%</string>
     <string name="price_in_month">%1$s / %2$s</string>
     <string name="support">Контакты</string>
@@ -34,6 +42,12 @@
     <string name="have_quetions_question">Есть вопросы?</string>
     <string name="restore">Восстановить</string>
     <string name="more">Подробнее</string>
+    <string name="cancel">Отмена</string>
+    <string name="continue_with_google">Продолжить с Google</string>
+    <string name="description_for_sbp_autorization">Для оплаты через СБП авторизуйтесь, чтобы подписка не потерялась при обновлении или переустановке приложения.</string>
+    <string name="premium_on_three_months">Premium на 3 месяца</string>
+    <string name="premium_on_one_year">Premium на 1 год</string>
+    <string name="waiting_pay">Ожидаем оплату…</string>
     <string name="manage_subscribe">Управление подпиской</string>
     <string name="you_have_premium_version">У вас Premium-версия</string>
     <string name="get_premium_eng">Получить Premium</string>
@@ -49,24 +63,40 @@
     <string name="term_of_use_eng">Terms of Use</string>
     <string name="available_to_you">Доступно для вас</string>
     <string name="write_in_support">Написать в поддержку</string>
+    <string name="payment_through_SBP">Оплатить через СБП</string>
     <string name="estimate_application">Оценить приложение</string>
+    <string name="acc">Аккаунт</string>
+    <string name="end_pay_in_bank_application">Завершите оплату в приложении банка, проверка оплаты может занять пару секунд</string>
     <string name="share_application">Поделиться приложением</string>
     <string name="more_info_about_premium">Узнайте больше о всех возможностях</string>
     <string name="application_language">Язык приложения</string>
     <string name="premium_alert_title"> Откройте ещё больше интересных и пикантных вопросов с Premium-версией прямо сейчас</string>
     <string name="premium_alert_subtitle">3 дня бесплатно, затем 199 р / 7 дней</string>
     <string name="cards"> карт</string>
+    <string name="check_internet_connection">Проверьте подключение к Интернету</string>
+    <string name="game_over"> Игра окончена</string>
+    <string name="game_over_text"> Поздравляем! Вы серьёзно настроены на игру. Следите за обновлениями в App Store, чтобы не упустить обновления!</string>
     <string name="game">Играть</string>
+    <string name="server_error">Ошибка подключения к серверу. Попробуйте зайти позже.</string>
     <string name="rules">Правила игры</string>
     <string name="rules_text1">Соберитесь компанией друзей.</string>
     <string name="selected_cards_info">%1$d пакет, %2$d карт.</string>
     <string name="rules_text2">Читайте карты громко вслух.</string>
     <string name="rules_text3">Все игроки, которые делали то, о чём говорится в карте, должны выпить небольшую порцию напитка (не забудьте, что игра допускает алкогольные и безалкогольные варианты).</string>
     <string name="rules_text4">Игра продолжается до тех пор, пока у вас не закончатся карты или до тех пор, пока вы не решите остановиться.</string>
-    <string name="rules_text5">Если ты единственный, кто это сделал, расскажи свою историю.  Не будь дураком, который ничего не рассказывает!</string>
+    <string name="rules_text5">Если ты единственный, кто это сделал, расскажи свою историю.Не будь дураком, который ничего \nне рассказывает!</string>
     <string name="question_format">Вопрос %1$d/%2$d</string>
     <string name="close_category">Хотите открыть доступ к закрытой категории? </string>
     <string name="get_free">Получите бесплатно 3 случайные карты из категории «Пикантное» </string>
     <string name="watch_advertising">Смотреть рекламу </string>
-
+    <string name="close"> Закрыть</string>
+    <string name="log_out_from_account"> Выйти из аккаунта</string>
+    <string name="server_client_id" translatable="false">799056637247-q5kljh4tgopq3v10dbahqrack5mn55ur.apps.googleusercontent.com</string>
+    <string name="authorization_in_Inever_game">Авторизация в Я никогда не...</string>
+    <string name="network_connection_error">Проверьте подключение к интернету</string>
+    <string name="enter_with_google">Войти с Google</string>
+    <string name="not_now">Не сейчас</string>
+    <string name="version">Версия приложения 1.1</string>
+    <string name="developed">Разработано в</string>
+    <string name="return_date">Возврат %1$s</string>
 </resources>
