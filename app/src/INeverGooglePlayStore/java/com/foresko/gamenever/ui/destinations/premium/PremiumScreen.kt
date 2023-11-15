@@ -142,7 +142,7 @@ private fun PremiumScreen(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                if (!viewModel.premiumIsActive) {
+                if (viewModel.premiumIsActive == false) {
                     Tariffs(
                         tariffType = viewModel.tariffType,
                         changeTariffType = viewModel::changeTariffType,

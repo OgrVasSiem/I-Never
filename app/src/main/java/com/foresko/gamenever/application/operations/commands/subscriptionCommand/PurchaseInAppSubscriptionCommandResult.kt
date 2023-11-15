@@ -10,7 +10,7 @@ import com.foresko.gamenever.core.apollo.ApolloOperationResult
 import com.foresko.gamenever.core.apollo.TechnicalError
 import com.foresko.gamenever.core.apollo.executeCatching
 import com.foresko.gamenever.graphql.PurchaseInAppSubscriptionMutation
-import com.foresko.gamenever.graphql.type.PlatformName
+import com.foresko.gamenever.graphql.type.DevicePlatform
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -77,6 +77,6 @@ class PurchaseInAppSubscriptionCommandHandlerImpl @Inject constructor(
 
 private fun PurchaseInAppSubscriptionCommand.toMutation() =
     PurchaseInAppSubscriptionMutation(
-        platformName = PlatformName.ANDROID,
+        platformName = DevicePlatform.ANDROID,
         subscriptionId = subscriptionId
     )

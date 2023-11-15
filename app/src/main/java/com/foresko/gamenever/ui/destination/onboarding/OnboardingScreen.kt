@@ -21,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -30,6 +31,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.amplitude.api.Amplitude
 import com.foresko.gamenever.R
 import com.foresko.gamenever.ui.RootNavGraph
 import com.foresko.gamenever.ui.RootNavigator
@@ -41,6 +43,7 @@ import com.foresko.gamenever.ui.theme.INeverTheme
 import com.ramcosta.composedestinations.annotation.Destination
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 
 @RootNavGraph(start = true)
 @Destination
@@ -49,11 +52,21 @@ fun OnboardingScreen(
     viewModel: OnboardingViewModel = hiltViewModel(),
     rootNavigator: RootNavigator
 ) {
+    var amplitudeInit by remember { mutableStateOf(true) }
+
+    LaunchedEffect(key1 = amplitudeInit) {
+        if (amplitudeInit) {
+            Amplitude.getInstance().logEvent("onboarding_welcome_screen")
+
+            amplitudeInit = false
+        }
+    }
+
     var initializeScreen by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(key1 = viewModel.onboardingState, key2 = viewModel.premiumIsActive) {
         if (viewModel.onboardingState?.default == false) {
-            if (viewModel.premiumIsActive || viewModel.onboardingState?.premium == false) {
+            if (viewModel.premiumIsActive == true || viewModel.onboardingState?.premium == false) {
                 rootNavigator.navigate(MainScreenDestination) {
                     popUpTo(route = OnboardingScreenDestination.route) { inclusive = true }
                 }
@@ -66,16 +79,23 @@ fun OnboardingScreen(
 
         delay(300)
 
-        if (viewModel.onboardingState != null) initializeScreen = true
+        if (viewModel.onboardingState != null && viewModel.premiumIsActive != null) initializeScreen =
+            true
     }
 
     if (initializeScreen) {
         OnboardingScreen(
+            viewModel = viewModel,
             navigateToPremiumOnboardingScreen = {
                 rootNavigator.navigate(PremiumOnboardingScreenDestination) {
                     popUpTo(route = OnboardingScreenDestination.route) { inclusive = true }
                 }
             },
+            navigateToMainScreen = {
+                rootNavigator.navigate(MainScreenDestination) {
+                    popUpTo(route = OnboardingScreenDestination.route) { inclusive = true }
+                }
+            }
         )
     }
 }
@@ -83,7 +103,9 @@ fun OnboardingScreen(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun OnboardingScreen(
+    viewModel: OnboardingViewModel,
     navigateToPremiumOnboardingScreen: () -> Unit,
+    navigateToMainScreen: () -> Unit
 ) {
     val pageCount = 3
 
@@ -116,6 +138,7 @@ private fun OnboardingScreen(
                         infoDescription = R.string.info_description_onboarding_first,
                         buttonName = R.string.great,
                     ) {
+                        Amplitude.getInstance().logEvent("onboarding_welcome_screen", JSONObject().put("number", 1))
                         coroutineScope.launch {
                             pagerState.animateScrollToPage(pagerState.currentPage + 1)
                         }
@@ -127,6 +150,7 @@ private fun OnboardingScreen(
                         infoDescription = R.string.info_description_onboarding_second,
                         buttonName = R.string.good,
                     ) {
+                        Amplitude.getInstance().logEvent("onboarding_welcome_screen", JSONObject().put("number", 2))
                         coroutineScope.launch {
                             pagerState.animateScrollToPage(pagerState.currentPage + 1)
                         }
@@ -138,7 +162,12 @@ private fun OnboardingScreen(
                         infoDescription = R.string.info_description_onboarding_thirth,
                         buttonName = R.string.continue_text,
                     ) {
-                        navigateToPremiumOnboardingScreen()
+                        Amplitude.getInstance().logEvent("onboarding_welcome_screen", JSONObject().put("number", 3))
+                        if (viewModel.premiumIsActive == false) {
+                            navigateToPremiumOnboardingScreen()
+                        } else {
+                            navigateToMainScreen()
+                        }
                     }
                 }
             }

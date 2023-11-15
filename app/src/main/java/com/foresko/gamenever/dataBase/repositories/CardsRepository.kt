@@ -23,11 +23,6 @@ class CardRepository @Inject constructor(
             saveNetworkCardToDb(networkCard)
         }
     }
-
-    suspend fun insertAll(cards: List<NetworkCard>) {
-        cards.forEach { saveNetworkCardToDb(it) }
-    }
-
     private suspend fun saveNetworkCardToDb(networkCard: NetworkCard) {
         val cardToInsert = Card(
             name = networkCard.name,

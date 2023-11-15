@@ -57,6 +57,7 @@ import com.foresko.gamenever.ui.theme.INeverTheme
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.ramcosta.composedestinations.annotation.Destination
 import kotlinx.coroutines.delay
+import com.amplitude.api.Amplitude
 
 @Composable
 @Destination
@@ -65,6 +66,16 @@ fun PremiumOnboardingScreen(
     viewModel: PremiumViewModel = hiltViewModel(),
     rootNavigator: RootNavigator
 ) {
+    var amplitudeInit by remember { mutableStateOf(true) }
+
+    LaunchedEffect(key1 = amplitudeInit) {
+        if (amplitudeInit) {
+            Amplitude.getInstance().logEvent("paywall_welcome_screen")
+
+            amplitudeInit = false
+        }
+    }
+
     var initializeScreen by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(key1 = viewModel.premiumIsActive, key2 = viewModel.onboardingState) {
@@ -76,7 +87,7 @@ fun PremiumOnboardingScreen(
 
         delay(300)
 
-        if (viewModel.onboardingState != null) initializeScreen =
+        if (viewModel.premiumIsActive != null  && viewModel.onboardingState != null) initializeScreen =
             true
     }
 

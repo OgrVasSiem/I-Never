@@ -14,7 +14,7 @@
 
     <application
         android:name=".INeverApplication"
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
@@ -23,7 +23,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.INever"
         tools:targetApi="31"
-        tools:replace="android:fullBackupContent">
+        tools:replace="android:allowBackup, android:fullBackupContent">
+
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-5693620155650275~6369507812" />

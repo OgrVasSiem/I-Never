@@ -53,7 +53,7 @@ class PremiumViewModel @Inject constructor(
     var premiumEndDateInEpochMilli by mutableStateOf(0L)
         private set
 
-    var premiumIsActive by mutableStateOf(false)
+    var premiumIsActive by mutableStateOf<Boolean?>(null)
         private set
 
     var onboardingState by mutableStateOf<OnboardingState?>(null)
@@ -83,10 +83,6 @@ class PremiumViewModel @Inject constructor(
     private var _productDetails = MutableStateFlow<ProductDetails?>(null)
     val productDetails = _productDetails.asStateFlow()
 
-
-    private var _purchasesSubscribe = MutableStateFlow<List<Purchase>>(emptyList())
-    val purchasesSubscribe = _purchasesSubscribe.asStateFlow()
-
     fun buyGoogleSubscription(
         productDetails: ProductDetails,
         activityRef: WeakReference<Activity>,
@@ -105,11 +101,12 @@ class PremiumViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            showOnboardingDataStore.data.collectLatest {
-                onboardingState = it
+            showOnboardingDataStore.data.collectLatest { onboarding ->
+                onboardingState = onboarding
+
+                showOnboardingDataStore.updateData { onboarding.copy(default = false) }
             }
         }
-
         viewModelScope.launch {
             queryDispatcher.dispatch(GetPremiumQuery).collectLatest {
                 premiumEndDateInEpochMilli = it.expiryDateTime
@@ -127,7 +124,7 @@ class PremiumViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            if (!premiumIsActive) {
+            if (premiumIsActive == false) {
                 queryDispatcher.dispatch(GetInAppSubscriptionsQuery)
                     .collectLatest { subscriptions ->
                         when (subscriptions) {
@@ -162,12 +159,7 @@ class PremiumViewModel @Inject constructor(
             }
         }
 
-        viewModelScope.launch {
-            queryDispatcher.dispatch(GetPurchasesSubscribeQuery)
-                .collectLatest { purchasesSubscribe ->
-                    _purchasesSubscribe.value = purchasesSubscribe
-                }
-        }
+
     }
 
     private fun appOpenedEvent(premiumIsActive: Boolean) {

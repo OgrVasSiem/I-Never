@@ -80,8 +80,6 @@ fun Tariffs(
 
     var percent by remember { mutableStateOf(BigDecimal(0)) }
 
-    var trialIsActive by remember { mutableStateOf(true) }
-
     LaunchedEffect(key1 = inAppSubscriptions) {
         try {
             monthSubscribePrice = inAppSubscriptions.firstOrNull {

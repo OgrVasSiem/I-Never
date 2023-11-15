@@ -95,7 +95,7 @@ class PremiumSynchronizationManager(
             UpdatePremiumCommand(
                 Premium(
                     isActive = true,
-                    expiryDateTime = 0L
+                    expiryDateTime = 0L,
                 )
             )
         )

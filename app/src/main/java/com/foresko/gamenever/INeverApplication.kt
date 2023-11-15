@@ -59,7 +59,7 @@ class INeverApplication : Application(), ImageLoaderFactory {
         premiumSynchronizationManager.init()
 
         Amplitude.getInstance()
-            .initialize(this, "a56454c3461ae020bf299e1007256f2de1a4f4d7")
+            .initialize(this, "06b57e7f021b7247be2003d012907f73")
     }
 
     override fun newImageLoader(): ImageLoader {

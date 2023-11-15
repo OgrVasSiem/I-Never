@@ -24,8 +24,7 @@ class OnboardingViewModel @Inject constructor(
     private val premiumDataStore: PremiumDataStore,
     private val firstStartDataStore: FirstStartDataStore
 ) : ViewModel() {
-    var premiumIsActive by mutableStateOf(false)
-        private set
+    var premiumIsActive by mutableStateOf<Boolean?>(null)
 
     var premiumEndDateInEpochMilli by mutableStateOf(0L)
         private set

@@ -18,6 +18,7 @@ import com.foresko.gamenever.dataStore.PremiumDataStore
 import com.foresko.gamenever.ui.destination.main.components.CardState
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -44,6 +45,7 @@ class MainViewModel @Inject constructor(
     val questions: State<List<Question>> = _questions
 
     private var premiumEndDateInEpochMilli by mutableLongStateOf(0L)
+
     var premiumIsActive by mutableStateOf<Boolean?>(null)
         private set
 
@@ -59,16 +61,19 @@ class MainViewModel @Inject constructor(
         Amplitude.getInstance().logEvent("premium_screen")
 
         viewModelScope.launch {
-            loadQuestionCountForCards()
             fetchAndCacheCards()
             loadCardsFromDatabase()
             monitorPremiumStatus()
             initAds()
         }
+
+        viewModelScope.launch {
+            delay(700)
+            loadQuestionCountForCards()
+        }
     }
 
     private suspend fun loadCardsFromDatabase() {
-
         try {
             val cardsFromDb = cardRepository.getAllCards()
             _card.value = cardsFromDb

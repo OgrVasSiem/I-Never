@@ -72,8 +72,10 @@ class PremiumViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            showOnboardingDataStore.data.collectLatest {
-                onboardingState = it
+            showOnboardingDataStore.data.collectLatest { onboarding ->
+                onboardingState = onboarding
+
+                showOnboardingDataStore.updateData { onboarding.copy(default = false) }
             }
         }
 

@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "686201979442",
-    "project_id": "inever-dc6cc",
-    "storage_bucket": "inever-dc6cc.appspot.com"
+    "project_number": "868625011431",
+    "project_id": "gamenever-39775",
+    "storage_bucket": "gamenever-39775.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:686201979442:android:8d85388a77baf02391f22b",
+        "mobilesdk_app_id": "1:868625011431:android:f8cae0f11f1f8f2d894842",
         "android_client_info": {
           "package_name": "com.foresko.gamenever"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCu_gGgsFqqT_u_YV8QEWxM0qnYRY477c8"
+          "current_key": "AIzaSyCUeE4yRq6-olQMtnX_9wIBSNw0Mn5W68c"
         }
       ],
       "services": {

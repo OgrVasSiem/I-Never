@@ -65,10 +65,11 @@ fun PremiumOnboardingScreen(
     viewModel: PremiumViewModel = hiltViewModel(),
     rootNavigator: RootNavigator
 ) {
+
     var initializeScreen by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(key1 = viewModel.premiumIsActive, key2 = viewModel.onboardingState) {
-        if (viewModel.premiumIsActive || viewModel.onboardingState?.premium == false) {
+        if (viewModel.premiumIsActive == true || viewModel.onboardingState?.premium == false) {
             rootNavigator.navigate(MainScreenDestination()) {
                 popUpTo(route = OnboardingScreenDestination.route) { inclusive = true }
             }
@@ -76,7 +77,7 @@ fun PremiumOnboardingScreen(
 
         delay(300)
 
-        if (viewModel.onboardingState != null) initializeScreen =
+        if (viewModel.premiumIsActive != null && viewModel.onboardingState != null) initializeScreen =
             true
     }
 

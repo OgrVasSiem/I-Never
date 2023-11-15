@@ -73,22 +73,22 @@ fun PremiumPrivilege(premiumIsActive: Boolean) {
             Spacer(modifier = Modifier.height(12.dp))
 
             DefaultItem(
-                icon = R.drawable.ic_keep,
+                icon = R.drawable.img_premium_1,
                 text = R.string.first_premium_privilege
             )
 
             DefaultItem(
-                icon = R.drawable.ic_keep,
+                icon = R.drawable.img_premium_2,
                 text = R.string.second_premium_privilege
             )
 
             DefaultItem(
-                icon = R.drawable.ic_keep,
+                icon = R.drawable.img_premium_3,
                 text = R.string.third_premium_privilege
             )
 
             DefaultItem(
-                icon = R.drawable.ic_keep,
+                icon = R.drawable.img_premium_4,
                 text = R.string.fourth_premium_privilege
             )
         }

@@ -28,6 +28,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -52,6 +53,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.amplitude.api.Amplitude
 import com.foresko.gamenever.R
 import com.foresko.gamenever.core.utils.emptyString
+import com.foresko.gamenever.core.utils.storeUrl
 import com.foresko.gamenever.ui.RootNavGraph
 import com.foresko.gamenever.ui.RootNavigator
 import com.foresko.gamenever.ui.destinations.destinations.AuthorizationBottomSheetDestination
@@ -101,15 +103,17 @@ private fun SettingsScreen(
     val intentShareApp = remember {
         Intent().apply {
             this.action = Intent.ACTION_SEND
-            this.putExtra(Intent.EXTRA_TEXT, Addresses.GooglePlayAddress)
+            this.putExtra(Intent.EXTRA_TEXT,  Uri.parse(storeUrl))
             this.type = "text/plain"
         }
     }
 
     val intentGooglePlay = remember {
         Intent(
-            Intent.ACTION_VIEW,
-            Uri.parse(Addresses.GooglePlayAddress)
+            Intent(
+                Intent.ACTION_VIEW,
+                Uri.parse(storeUrl)
+            )
         )
     }
 
@@ -144,26 +148,34 @@ private fun SettingsScreen(
                 DefaultSettingsButton(
                     text = R.string.write_in_support,
                     image = (R.drawable.ic_support),
-                    onClick = { context.startActivity(intentTelegram) }
+                    onClick = {
+                        Amplitude.getInstance().logEvent("support")
+                        context.startActivity(intentTelegram) }
                 )
 
                 DefaultSettingsButtonNew(
                     functionName = R.string.acc,
                     icon = (R.drawable.ic_authorization),
-                    onClick = navigateToAuthorizationBottomSheet,
+                    onClick = {
+                        Amplitude.getInstance().logEvent("account")
+                        navigateToAuthorizationBottomSheet() },
                     account = account
                 )
 
                 DefaultSettingsButton(
                     text = R.string.estimate_application,
                     image = (R.drawable.ic_star),
-                    onClick = { context.startActivity(intentGooglePlay) }
+                    onClick = {
+                        Amplitude.getInstance().logEvent("rate_app")
+                        context.startActivity(intentGooglePlay) }
                 )
 
                 DefaultSettingsButton(
                     text = R.string.share_application,
                     image = (R.drawable.ic_share),
-                    onClick = { context.startActivity(intentShareApp) }
+                    onClick = {
+                        Amplitude.getInstance().logEvent("share_app")
+                        context.startActivity(intentShareApp) }
                 )
 
                 Spacer(modifier = Modifier.weight(1f))
@@ -177,24 +189,9 @@ private fun SettingsScreen(
 
                 Spacer(modifier = Modifier.height(14.dp))
 
-                Row (modifier = Modifier.align(Alignment.CenterHorizontally)){
-                    Text(
-                        text = stringResource(id = R.string.developed),
-                        color = INeverTheme.colors.primary.copy(alpha = 0.65f),
-                        style = INeverTheme.textStyles.footerSettings
-                    )
+                InfoAboutDevelopersCompany(modifier = Modifier.align(Alignment.CenterHorizontally))
 
-                    Icon(
-                        painter = painterResource(R.drawable.ic_logo),
-                        contentDescription = null,
-                        tint = Color.Unspecified
-                    )
-
-                    Icon(
-                        painter = painterResource(R.drawable.ic_logo_name),
-                        contentDescription = null,
-                    )
-                }
+                Spacer(modifier = Modifier.height(14.dp))
             }
         }
     }
@@ -206,7 +203,7 @@ private fun TopAppBar(
     popBackStack: () -> Unit
 ) {
     CenterAlignedTopAppBar(
-        colors = androidx.compose.material3.TopAppBarDefaults.topAppBarColors(containerColor = Color.White),
+        colors = topAppBarColors(containerColor = Color.White),
         title = {
             Text(
                 stringResource(id = R.string.settings),
@@ -224,7 +221,12 @@ private fun TopAppBar(
                     .clickable(
                         interactionSource = MutableInteractionSource(),
                         indication = rememberRipple(bounded = false),
-                        onClick = popBackStack
+                        onClick = {
+                            Amplitude
+                                .getInstance()
+                                .logEvent("settings_back_button")
+                            popBackStack()
+                        }
                     ),
                 tint = Color.Unspecified
             )
@@ -260,6 +262,9 @@ private fun PremiumButton(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = rememberRipple(bounded = true)
             ) {
+                Amplitude
+                    .getInstance()
+                    .logEvent("premium_button")
                 navigateToPremiumScreen()
             }
     ) {
@@ -327,6 +332,9 @@ private fun PremiumButton(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = rememberRipple(bounded = true)
                     ) {
+                        Amplitude
+                            .getInstance()
+                            .logEvent("premium_button")
                         navigateToPremiumScreen()
                     }
             ) {
@@ -484,7 +492,50 @@ fun DefaultSettingsButtonNew(
 
 private object Addresses {
     const val NonPremiumTelegramAddress = "https://t.me/Foresko_Support"
+}
 
-    const val GooglePlayAddress =
-        "https://play.google.com/store/apps/details?id=com.foresko.horoscopes"
+@Composable
+private fun InfoAboutDevelopersCompany(
+    modifier: Modifier
+) {
+    val context = LocalContext.current
+
+    val intent = remember {
+        Intent(
+            Intent.ACTION_VIEW,
+            Uri.parse("https://foresko.com/")
+        )
+    }
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+    ) {
+        androidx.compose.material3.Text(
+            text = stringResource(R.string.developed),
+            fontSize = 13.sp,
+            lineHeight = 20.sp,
+            fontWeight = FontWeight(400),
+            color = INeverTheme.colors.primary,
+
+            )
+
+        Spacer(modifier = Modifier.width(6.dp))
+
+        Icon(
+            painter = painterResource(R.drawable.groop_logo),
+            contentDescription = null,
+            tint = Color.Unspecified,
+            modifier = Modifier
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null
+                ) {
+                    Amplitude
+                        .getInstance()
+                        .logEvent("foresko")
+                    context.startActivity(intent)
+                }
+        )
+    }
 }
