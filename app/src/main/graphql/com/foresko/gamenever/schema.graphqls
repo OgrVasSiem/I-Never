@@ -1,0 +1,180 @@
+# This file was generated. Do not edit manually.
+
+schema {
+    query: Query
+    mutation: Mutation
+}
+
+interface Error {
+    message: String
+    typename: String! @deprecated(reason: "use `__typename` field instead")
+}
+
+interface Node {
+    "The ID of the object."
+    id: ID!
+}
+
+interface Object {
+    typename: String! @deprecated(reason: "use `__typename` field instead")
+}
+
+union PurchaseInAppSubscriptionResult = PurchaseInAppSubscriptionErrorDueToPaymentGatewayError | PurchaseInAppSubscriptionSuccessResult | UnspecifiedError
+
+union RefreshAccessTokenResult = RefreshAccessTokenSuccessResult | UnspecifiedError
+
+union SignInWithAppleResult = SignInWithAppleSuccessResult | UnspecifiedError
+
+union SignInWithGoogleResult = SignInWithGoogleSuccessResult | UnspecifiedError
+
+union SignOutResult = SignOutSuccessResult | UnspecifiedError
+
+type InAppSubscription implements Node & Object {
+    "The ID of an object"
+    id: ID!
+    period: InAppSubscriptionPeriod!
+    price: MonetaryAmount!
+    sku: String!
+    typename: String! @deprecated(reason: "use `__typename` field instead")
+}
+
+type InAppSubscriptionPeriod implements Object {
+    typename: String! @deprecated(reason: "use `__typename` field instead")
+    unit: InAppSubscriptionPeriodUnit!
+    value: Int!
+}
+
+type InAppSubscriptionPurchase implements Node & Object {
+    confirmationUrl: String
+    creationDateTime: DateTime!
+    "The ID of an object"
+    id: ID!
+    status: InAppSubscriptionPurchaseStatus!
+    subscription: InAppSubscription!
+    typename: String! @deprecated(reason: "use `__typename` field instead")
+}
+
+type MonetaryAmount implements Object {
+    currencyCode: String!
+    typename: String! @deprecated(reason: "use `__typename` field instead")
+    value: Decimal!
+}
+
+type Mutation {
+    purchaseInAppSubscription(devicePlatform: DevicePlatform!, subscriptionId: ID!): PurchaseInAppSubscriptionResult
+    refreshAccessToken(refreshToken: RefreshToken!): RefreshAccessTokenResult
+    signInWithApple(idToken: String!): SignInWithAppleResult
+    signInWithGoogle(idToken: String!): SignInWithGoogleResult
+    signOut: SignOutResult
+}
+
+type PurchaseInAppSubscriptionErrorDueToPaymentGatewayError implements Error & Object {
+    message: String
+    typename: String! @deprecated(reason: "use `__typename` field instead")
+}
+
+type PurchaseInAppSubscriptionSuccessResult implements Object {
+    purchase: InAppSubscriptionPurchase!
+    typename: String! @deprecated(reason: "use `__typename` field instead")
+}
+
+type Query {
+    androidAppUpdateAvailabilityStatus(packageName: String!, version: Version!): AppUpdateAvailabilityStatus
+    inAppSubscriptions: [InAppSubscription!]
+    iosAppUpdateAvailabilityStatus(bundleId: String!, version: Version!): AppUpdateAvailabilityStatus
+    node(
+        "The ID of an object."
+        id: ID!
+    ): Node
+    viewer: Viewer
+}
+
+type RefreshAccessTokenSuccessResult implements Object {
+    accessToken: AccessToken!
+    refreshToken: RefreshToken!
+    typename: String! @deprecated(reason: "use `__typename` field instead")
+}
+
+type SignInWithAppleSuccessResult implements Object {
+    accessToken: AccessToken!
+    refreshToken: RefreshToken!
+    typename: String! @deprecated(reason: "use `__typename` field instead")
+}
+
+type SignInWithGoogleSuccessResult implements Object {
+    accessToken: AccessToken!
+    refreshToken: RefreshToken!
+    typename: String! @deprecated(reason: "use `__typename` field instead")
+}
+
+type SignOutSuccessResult implements Object {
+    typename: String! @deprecated(reason: "use `__typename` field instead")
+}
+
+type UnspecifiedError implements Error & Object {
+    message: String
+    typename: String! @deprecated(reason: "use `__typename` field instead")
+}
+
+type Viewer implements Node & Object {
+    emailAddress: String!
+    "The ID of an object"
+    id: ID!
+    inAppSubscription: ViewerInAppSubscription
+    typename: String! @deprecated(reason: "use `__typename` field instead")
+}
+
+type ViewerInAppSubscription implements Node & Object {
+    expirationDateTime: DateTime!
+    "The ID of an object"
+    id: ID!
+    isActive: Boolean!
+    lastSuccessfullyPurchasedSubscription: InAppSubscription
+    typename: String! @deprecated(reason: "use `__typename` field instead")
+}
+
+enum AppUpdateAvailabilityStatus {
+    NON_REQUIRED_UPDATE_AVAILABLE
+    REQUIRED_UPDATE_AVAILABLE
+    UPDATE_NOT_AVAILABLE
+}
+
+enum DevicePlatform {
+    ANDROID
+    IOS
+}
+
+enum InAppSubscriptionPeriodUnit {
+    MINUTE
+    MONTH
+    YEAR
+}
+
+enum InAppSubscriptionPurchaseStatus {
+    CANCELED
+    CONFIRMED
+    PENDING
+}
+
+scalar AccessToken
+
+"""
+
+The `DateTime` scalar type represents a date and time in the UTC
+timezone. The DateTime appears in a JSON response as an ISO8601 formatted
+string, including UTC timezone ("Z"). The parsed date and time string will
+be converted to UTC if there is an offset.
+"""
+scalar DateTime
+
+"""
+
+The `Decimal` scalar type represents signed double-precision fractional
+values parsed by the `Decimal` library. The Decimal appears in a JSON
+response as a string to preserve precision.
+"""
+scalar Decimal
+
+scalar RefreshToken
+
+scalar Version

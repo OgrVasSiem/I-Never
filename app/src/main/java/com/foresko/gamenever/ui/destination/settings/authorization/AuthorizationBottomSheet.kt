@@ -98,7 +98,7 @@ private fun AuthorizationBottomSheetContent(
             .fillMaxWidth()
             .background(Color.White)
     ) {
-        if (viewModel.account != null) {
+        if (viewModel.session  != null) {
             Spacer(modifier = Modifier.height(8.dp))
 
             Row(
@@ -203,7 +203,7 @@ private fun AuthorizationButton(
                 indication = rememberRipple(bounded = true, color = INeverTheme.colors.white)
             ) {
                 openGoogleAlertDialog()
-                Log.d("AuthorizationDebug", "Account info: ${viewModel.account}")
+                Log.d("InitializationProvider", "Account info: ${viewModel.session}")
 
             }
     ) {

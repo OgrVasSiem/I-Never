@@ -8,6 +8,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.foresko.gamenever.application.core.query.QueryDispatcher
 import com.foresko.gamenever.application.operations.queries.dataStoreQueries.GetPremiumQuery
+import com.foresko.gamenever.application.operations.queries.dataStoreQueries.GetSessionQuery
+import com.foresko.gamenever.dataStore.Session
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,7 +23,7 @@ class SettingsViewModel @Inject constructor(
     @ApplicationContext context: Context,
     private val queryDispatcher: QueryDispatcher,
 ) : ViewModel() {
-    var account by mutableStateOf(GoogleSignIn.getLastSignedInAccount(context))
+    var session by mutableStateOf<Session?>(null)
         private set
 
     var premiumIsActive by mutableStateOf(false)
@@ -37,6 +39,12 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             queryDispatcher.dispatch(GetPremiumQuery).collectLatest {
                 premiumIsActive = it.isActive
+            }
+        }
+
+        viewModelScope.launch {
+            queryDispatcher.dispatch(GetSessionQuery).collectLatest {
+                session = it
             }
         }
     }

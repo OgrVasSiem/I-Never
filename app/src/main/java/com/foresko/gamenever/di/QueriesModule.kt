@@ -13,6 +13,8 @@ import com.foresko.gamenever.application.core.query.Query
 import com.foresko.gamenever.application.core.query.QueryHandler
 import com.foresko.gamenever.application.operations.queries.dataStoreQueries.GetSessionQuery
 import com.foresko.gamenever.application.operations.queries.dataStoreQueries.GetSessionQueryHandler
+import com.foresko.gamenever.application.operations.queries.subscriptionQueries.GetAppUpdateAvailabilityStatusQuery
+import com.foresko.gamenever.application.operations.queries.subscriptionQueries.GetAppUpdateAvailabilityStatusQueryHandler
 import com.foresko.gamenever.application.operations.queries.subscriptionQueries.GetInAppSubscriptionPurchaseQuery
 import com.foresko.gamenever.application.operations.queries.subscriptionQueries.GetInAppSubscriptionPurchaseQueryHandler
 import com.foresko.gamenever.application.operations.queries.subscriptionQueries.GetInAppSubscriptionQuery
@@ -54,6 +56,13 @@ abstract class QueriesModule {
     @QueryHandlerKey(GetInfoAboutUserSubscriptionQuery::class)
     abstract fun bindGetInfoAboutUserSubscriptionQueryHandler(
         GetInfoAboutUserSubscriptionQueryHandler: GetInfoAboutUserSubscriptionQueryHandler
+    ): QueryHandler<*, *>
+
+    @Binds
+    @IntoMap
+    @QueryHandlerKey(GetAppUpdateAvailabilityStatusQuery::class)
+    abstract fun bindGetAppUpdateAvailabilityStatusQueryHandler(
+        getAppUpdateAvailabilityStatusQueryHandler: GetAppUpdateAvailabilityStatusQueryHandler
     ): QueryHandler<*, *>
 
     @Binds

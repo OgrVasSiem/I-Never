@@ -155,16 +155,13 @@ private fun PremiumOnboardingScreen(
                     tariffType = viewModel.tariffType,
                     changeTariffType = viewModel::changeTariffType
                 )
-
-                Spacer(modifier = Modifier.height(20.dp))
-
                 SubscriptionButtons(
                     navigateToPendingStatusPurchaseScreen = navigateToPendingStatusPurchaseScreen,
                     navigateToAuthorizationSBPBottomSheet = navigateToAuthorizationSBPBottomSheet,
-                    account = viewModel.account
+                    session = viewModel.session
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(30.dp))
 
                 Info(
                     navigateToTermOfUse = navigateToTermOfUse,

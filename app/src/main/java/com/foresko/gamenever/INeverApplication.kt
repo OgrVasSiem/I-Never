@@ -11,7 +11,6 @@ import coil.ImageLoaderFactory
 import coil.decode.SvgDecoder
 import com.amplitude.api.Amplitude
 import com.foresko.gamenever.core.ads.Ads
-import com.foresko.gamenever.core.google.AuthorizationManager
 import com.foresko.gamenever.core.premium.PremiumSynchronizationManager
 import com.foresko.gamenever.dataBase.AppDatabase
 import com.google.android.gms.ads.MobileAds
@@ -27,9 +26,6 @@ class INeverApplication : Application(), ImageLoaderFactory {
 
     @Inject
     lateinit var ads: Ads
-
-    @Inject
-    lateinit var authorizationManager: AuthorizationManager
 
     @Inject
     lateinit var workerFactory: HiltWorkerFactory
@@ -50,8 +46,6 @@ class INeverApplication : Application(), ImageLoaderFactory {
 
         FirebaseApp.initializeApp(this)
 
-        authorizationManager.init()
-
         MobileAds.initialize(this) {
             ads.initAds()
         }
@@ -61,6 +55,7 @@ class INeverApplication : Application(), ImageLoaderFactory {
         Amplitude.getInstance()
             .initialize(this, "06b57e7f021b7247be2003d012907f73")
     }
+
 
     override fun newImageLoader(): ImageLoader {
         return ImageLoader.Builder(this)

@@ -1,0 +1,12 @@
+{
+  "name": "Untitled GraphQL Schema",
+  "schemaPath": "schema.graphqls",
+  "extensions": {
+    "endpoints": {
+      "production": {
+        "url": "https://api.dev.nevergame.foresko.com/v1/graphql",
+        "introspect": false
+      }
+    }
+  }
+}

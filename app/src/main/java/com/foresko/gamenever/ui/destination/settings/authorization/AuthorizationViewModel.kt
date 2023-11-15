@@ -6,13 +6,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import arrow.core.Either
 import com.foresko.gamenever.application.core.command.CommandDispatcher
 import com.foresko.gamenever.application.core.query.QueryDispatcher
+import com.foresko.gamenever.application.operations.commands.authorizationCommands.SignInWithGoogleCommand
 import com.foresko.gamenever.application.operations.commands.authorizationCommands.SignOutCommand
 import com.foresko.gamenever.application.operations.queries.dataStoreQueries.GetPremiumQuery
+import com.foresko.gamenever.application.operations.queries.dataStoreQueries.GetSessionQuery
 import com.foresko.gamenever.core.google.AuthResult
 import com.foresko.gamenever.core.network.NetworkStatus
 import com.foresko.gamenever.core.network.NetworkStatusTracker
+import com.foresko.gamenever.dataStore.Session
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -21,6 +25,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -28,16 +33,16 @@ import javax.inject.Inject
 class AuthorizationViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val queryDispatcher: QueryDispatcher,
-    private val networkStatusTracker: NetworkStatusTracker,
     private val commandDispatcher: CommandDispatcher,
     val authResult: AuthResult
 ): ViewModel(){
-    val account = GoogleSignIn.getLastSignedInAccount(context)
+    var session by mutableStateOf<Session?>(null)
+        private set
 
     var authorizationState by mutableStateOf(false)
         private set
 
-    var premiumIsActive by mutableStateOf(false)
+    var premiumIsActive by mutableStateOf<Boolean?>(null)
         private set
 
     var isNetworkConnectionError by mutableStateOf(false)
@@ -49,19 +54,11 @@ class AuthorizationViewModel @Inject constructor(
 
     fun signOutGoogleAccount() {
         viewModelScope.launch {
-            networkStatusTracker.networkStatus.collectLatest {
-                if (it is NetworkStatus.Available) {
-                    GoogleSignIn.getClient(
-                        context, GoogleSignInOptions.Builder().build()
-                    ).signOut().apply {
-                        commandDispatcher.dispatch(SignOutCommand)
-                    }
+            viewModelScope.launch {
+                when (commandDispatcher.dispatch(SignOutCommand)) {
+                    is Either.Right -> authorizationState = true
 
-                    authorizationState = true
-                } else {
-                    delay(500)
-
-                    changeNetworkConnectionErrorState(true)
+                    is Either.Left -> changeNetworkConnectionErrorState(true)
                 }
             }
         }
@@ -69,15 +66,14 @@ class AuthorizationViewModel @Inject constructor(
 
     fun authorization(task: Task<GoogleSignInAccount>?) {
         viewModelScope.launch {
-            networkStatusTracker.networkStatus.collectLatest {
-                if (it is NetworkStatus.Available) {
-                    authResult.processTask(task)
+            when (commandDispatcher.dispatch(SignInWithGoogleCommand(task = task))) {
+                is Either.Right -> {
+                    premiumIsActive = null
 
                     authorizationState = true
-                } else {
-                    delay(500)
-                    changeNetworkConnectionErrorState(true)
                 }
+
+                is Either.Left -> changeNetworkConnectionErrorState(true)
             }
         }
     }
@@ -85,8 +81,14 @@ class AuthorizationViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             queryDispatcher.dispatch(GetPremiumQuery).collectLatest {
+
+
                 premiumIsActive = it.isActive
             }
+        }
+
+        viewModelScope.launch {
+            session = queryDispatcher.dispatch(GetSessionQuery).firstOrNull()
         }
     }
 }

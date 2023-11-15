@@ -77,6 +77,6 @@ class PurchaseInAppSubscriptionCommandHandlerImpl @Inject constructor(
 
 private fun PurchaseInAppSubscriptionCommand.toMutation() =
     PurchaseInAppSubscriptionMutation(
-        platformName = DevicePlatform.ANDROID,
+        devicePlatform = DevicePlatform.ANDROID,
         subscriptionId = subscriptionId
     )

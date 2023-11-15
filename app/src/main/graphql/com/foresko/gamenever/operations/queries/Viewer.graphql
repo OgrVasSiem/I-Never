@@ -1,0 +1,10 @@
+query InfoAboutUserSubscriptionQuery {
+    viewer {
+        ... on Viewer {
+            inAppSubscription {
+                isActive
+                expirationDateTime
+            }
+        }
+    }
+}

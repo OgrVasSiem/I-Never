@@ -151,7 +151,7 @@ private fun PremiumScreen(
                     SubscriptionButtons(
                         navigateToPendingStatusPurchaseScreen = navigateToPendingStatusPurchaseScreen,
                         navigateToAuthorizationSBPBottomSheet = navigateToAuthorizationSBPBottomSheet,
-                        account = viewModel.account
+                        session = viewModel.session
                     )
                 } else {
                     InfoAboutPremium()

@@ -23,7 +23,7 @@ class Ads(
         val adRequest = AdRequest.Builder().build()
         InterstitialAd.load(
             context,
-            "ca-app-pub-5693620155650275~6369507812",
+            "ca-app-pub-5693620155650275~9805635036",
             adRequest,
             object : InterstitialAdLoadCallback() {
                 override fun onAdFailedToLoad(adError: LoadAdError) {

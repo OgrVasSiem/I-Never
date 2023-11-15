@@ -91,7 +91,7 @@ private fun PendingStatusPurchaseScreen(
     Scaffold(
         modifier = Modifier
             .navigationBarsPadding(),
-        backgroundColor = INeverTheme.colors.bg,
+        backgroundColor = INeverTheme.colors.white,
         topBar = {
             TopAppBar(popBackStack = popBackStack)
         }

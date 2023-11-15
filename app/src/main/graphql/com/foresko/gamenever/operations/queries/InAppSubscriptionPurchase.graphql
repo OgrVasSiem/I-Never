@@ -1,0 +1,7 @@
+query InAppSubscriptionPurchaseQuery($id: ID!) {
+    node(id: $id) {
+        ... on InAppSubscriptionPurchase {
+            status
+        }
+    }
+}

@@ -28,12 +28,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.foresko.gamenever.R
+import com.foresko.gamenever.dataStore.Session
 import com.foresko.gamenever.ui.theme.INeverTheme
 
 @Composable
 fun SubscriptionButtons(
     navigateToAuthorizationSBPBottomSheet: () -> Unit,
-    account: GoogleSignInAccount?,
+    session: Session?,
     navigateToPendingStatusPurchaseScreen: () -> Unit
 ) {
     Column(
@@ -41,12 +42,10 @@ fun SubscriptionButtons(
             .padding(horizontal = 40.dp)
             .fillMaxWidth()
     ) {
-        Spacer(modifier = Modifier.height(14.dp))
-
         SBPSubscription(
             navigateToAuthorizationSBPBottomSheet = navigateToAuthorizationSBPBottomSheet,
             navigateToPendingStatusPurchaseScreen = navigateToPendingStatusPurchaseScreen,
-            account = account
+            session = session
         )
     }
 }
@@ -54,7 +53,7 @@ fun SubscriptionButtons(
 @Composable
 private fun SBPSubscription(
     navigateToAuthorizationSBPBottomSheet: () -> Unit,
-    account: GoogleSignInAccount?,
+    session: Session?,
     navigateToPendingStatusPurchaseScreen: () -> Unit,
 ) {
     Box(
@@ -69,7 +68,7 @@ private fun SBPSubscription(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = rememberRipple(bounded = true)
             ) {
-                if (account == null) {
+                if (session == null) {
                     navigateToAuthorizationSBPBottomSheet()
                 } else {
                     navigateToPendingStatusPurchaseScreen()

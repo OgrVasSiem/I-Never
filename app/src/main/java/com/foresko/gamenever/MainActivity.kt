@@ -26,7 +26,7 @@ class MainActivity : ComponentActivity() {
 
         Appodeal.initialize(
             activity = this,
-            appKey = "2a6f87e8960ab6840bba8b2f6144bec511f76d6bb1d0e211",
+            appKey = "b34571dc9962b597927d98241ca7e702d5d7458d42b1023b",
             adTypes = Appodeal.INTERSTITIAL,
             hasConsent = true
         )

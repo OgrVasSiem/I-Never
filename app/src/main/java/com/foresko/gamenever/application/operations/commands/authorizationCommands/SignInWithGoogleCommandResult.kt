@@ -10,11 +10,15 @@ import com.foresko.gamenever.core.apollo.ApolloOperationFailed
 import com.foresko.gamenever.core.apollo.ApolloOperationResult
 import com.foresko.gamenever.core.apollo.TechnicalError
 import com.foresko.gamenever.core.apollo.executeCatching
+import com.foresko.gamenever.core.utils.emptyString
 import com.foresko.gamenever.dataStore.Session
 import com.foresko.gamenever.dataStore.SessionDataStore
 import com.foresko.gamenever.graphql.SignInWithGoogleMutation
 import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.tasks.Task
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -31,7 +35,7 @@ sealed class SignInWithGoogleCommandResult {
 }
 
 data class SignInWithGoogleCommand(
-    val idToken: String
+    val task: Task<GoogleSignInAccount>?
 ) : RemoteCommand<SignInWithGoogleCommandResult>
 
 class SignInWithGoogleCommandHandler @Inject constructor(
@@ -45,52 +49,76 @@ class SignInWithGoogleCommandHandler @Inject constructor(
     override suspend fun handle(command: SignInWithGoogleCommand): Either<TechnicalError, SignInWithGoogleCommandResult> {
         return mutex.withLock {
             withContext(Dispatchers.IO) {
-                apolloClient
-                    .mutation(SignInWithGoogleMutation(idToken = command.idToken))
-                    .executeCatching()
-                    .map { apolloOperationResult ->
-                        when (apolloOperationResult) {
-                            is ApolloOperationResult.Failure -> {
-                                FirebaseCrashlytics.getInstance()
-                                    .recordException(ApolloOperationFailed(apolloOperationResult))
+                try {
+                    val account = GoogleSignIn.getLastSignedInAccount(context)
 
-                                signOutFromGoogle(context = context)
-
-                                SignInWithGoogleCommandResult.UnknownError(
-                                    message = ApolloOperationFailed(apolloOperationResult).message
-                                        ?: ""
-                                )
-                            }
-
-                            is ApolloOperationResult.Success -> {
-                                val data = apolloOperationResult.data.signInWithGoogle!!
-
-                                if (data.onSignInWithGoogleSuccessResult != null) {
-                                    sessionDataStore.updateData {
-                                        Session(
-                                            accessToken = data.onSignInWithGoogleSuccessResult.accessToken.toString(),
-                                            refreshToken = data.onSignInWithGoogleSuccessResult.refreshToken.toString()
-                                        )
-                                    }
-
-                                    SignInWithGoogleCommandResult.Success
-                                } else {
-                                    signOutFromGoogle(context = context)
-
-                                    SignInWithGoogleCommandResult.UnknownError(
-                                        message = data.onError?.message ?: ""
-                                    )
-                                }
-                            }
-                        }
+                    if (account != null) {
+                        signInWithGoogle(account = account)
+                    } else {
+                        command.task?.getResult(ApiException::class.java)?.let { accountInit ->
+                            signInWithGoogle(account = accountInit)
+                        } ?: Either.Right(getUnknownError(message = "task is null"))
                     }
+                } catch (e: ApiException) {
+                    FirebaseCrashlytics.getInstance().recordException(e)
+
+                    Either.Right(
+                        getUnknownError(message = e.message ?: emptyString)
+                    )
+                }
             }
         }
     }
-}
 
-private fun signOutFromGoogle(context: Context) {
-    GoogleSignIn.getClient(
-        context, GoogleSignInOptions.Builder().build()
-    ).signOut()
+    private suspend fun signInWithGoogle(account: GoogleSignInAccount): Either<TechnicalError, SignInWithGoogleCommandResult> {
+        return apolloClient
+            .mutation(SignInWithGoogleMutation(idToken = account.idToken.orEmpty()))
+            .executeCatching()
+            .map { apolloOperationResult ->
+                when (apolloOperationResult) {
+                    is ApolloOperationResult.Failure -> {
+                        FirebaseCrashlytics.getInstance()
+                            .recordException(ApolloOperationFailed(apolloOperationResult))
+
+                        signOutFromGoogle(context = context)
+
+                        getUnknownError(
+                            ApolloOperationFailed(apolloOperationResult).message ?: emptyString
+                        )
+                    }
+
+                    is ApolloOperationResult.Success -> {
+                        val data = apolloOperationResult.data.signInWithGoogle!!
+
+                        if (data.onSignInWithGoogleSuccessResult != null) {
+                            sessionDataStore.updateData {
+                                Session(
+                                    accessToken = data.onSignInWithGoogleSuccessResult.accessToken.toString(),
+                                    refreshToken = data.onSignInWithGoogleSuccessResult.refreshToken.toString(),
+                                    email = account.email ?: emptyString
+                                )
+                            }
+
+                            SignInWithGoogleCommandResult.Success
+                        } else {
+                            signOutFromGoogle(context = context)
+
+                            getUnknownError(data.onError?.message ?: emptyString)
+                        }
+                    }
+                }
+            }
+    }
+
+    private fun signOutFromGoogle(context: Context) {
+        GoogleSignIn.getClient(
+            context, GoogleSignInOptions.Builder().build()
+        ).signOut()
+    }
+
+    private fun getUnknownError(message: String): SignInWithGoogleCommandResult.UnknownError {
+        return SignInWithGoogleCommandResult.UnknownError(
+            message = message
+        )
+    }
 }

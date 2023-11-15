@@ -17,6 +17,7 @@ import com.foresko.gamenever.core.apollo.TechnicalError
 import com.foresko.gamenever.core.utils.emptyString
 import com.foresko.gamenever.dataStore.OnboardingState
 import com.foresko.gamenever.dataStore.PremiumDataStore
+import com.foresko.gamenever.dataStore.Session
 import com.foresko.gamenever.dataStore.ShowOnboardingDataStore
 import com.foresko.gamenever.ui.destination.premium.TariffType
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -37,7 +38,7 @@ class PremiumViewModel @Inject constructor(
     private val premiumDataStore: PremiumDataStore,
     @ApplicationContext applicationContext: Context
 ) : ViewModel() {
-    var account by mutableStateOf(GoogleSignIn.getLastSignedInAccount(applicationContext))
+    var session by mutableStateOf<Session?>(null)
         private set
 
     var premiumEndDateInEpochMilli by mutableStateOf(0L)
@@ -53,6 +54,7 @@ class PremiumViewModel @Inject constructor(
         private set
 
     var inAppSubscriptions by mutableStateOf<List<InAppSubscription>>(emptyList())
+        private set
 
     var subscriptionId by mutableStateOf(emptyString)
         private set
@@ -121,7 +123,7 @@ class PremiumViewModel @Inject constructor(
 
         viewModelScope.launch {
             queryDispatcher.dispatch(GetSessionQuery).collectLatest {
-                account = GoogleSignIn.getLastSignedInAccount(applicationContext)
+                session = it
             }
         }
     }

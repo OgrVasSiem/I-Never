@@ -1,0 +1,3 @@
+query appUpdateAvailabilityStatusQuery($packageName: String!, $version: Version!) {
+    androidAppUpdateAvailabilityStatus(packageName: $packageName, version: $version)
+}

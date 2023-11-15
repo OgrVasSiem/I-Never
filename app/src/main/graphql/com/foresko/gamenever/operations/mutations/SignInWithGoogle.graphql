@@ -1,0 +1,12 @@
+mutation SignInWithGoogleMutation($idToken: String!) {
+    signInWithGoogle(idToken: $idToken) {
+        ... on SignInWithGoogleSuccessResult {
+            accessToken
+            refreshToken
+        }
+
+        ... on Error {
+            message
+        }
+    }
+}

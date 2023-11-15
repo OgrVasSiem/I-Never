@@ -1,0 +1,12 @@
+query InAppSubscriptionQuery($id: ID!) {
+    node(id: $id) {
+        ... on InAppSubscription {
+            id
+            price {
+                currencyCode
+                value
+            }
+            sku
+        }
+    }
+}

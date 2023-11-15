@@ -5,6 +5,7 @@ import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.preferencesDataStoreFile
 import com.foresko.gamenever.dataStore.FirstStartDataStore
 import com.foresko.gamenever.dataStore.PremiumDataStore
+import com.foresko.gamenever.dataStore.ReminderAboutPremiumDataStore
 import com.foresko.gamenever.dataStore.SessionDataStore
 import com.foresko.gamenever.dataStore.ShowOnboardingDataStore
 import dagger.Module
@@ -56,6 +57,12 @@ object DataStoreModule {
                 produceFile = { context.preferencesDataStoreFile("session") }
             )
         )
+    }
+
+    @Singleton
+    @Provides
+    fun provideReminderAboutPremiumDataStore(@ApplicationContext context: Context): ReminderAboutPremiumDataStore {
+        return ReminderAboutPremiumDataStore(context = context)
     }
 
 

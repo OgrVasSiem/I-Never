@@ -36,10 +36,10 @@ class GetInfoAboutUserSubscriptionQueryHandler @Inject constructor(
                     }
 
                     is ApolloOperationResult.Success -> {
-                        apolloOperationResult.data.viewer?.inAppSubscription?.let { info ->
+                        apolloOperationResult.data.viewer?.onViewer?.inAppSubscription?.let { info ->
                             Premium(
                                 isActive = info.isActive,
-                                expiryDateTime = info.expirationDateTime.toInstant().toEpochMilli(),
+                                expiryDateTime = info.expirationDateTime.toInstant().toEpochMilli()
                             )
                         }
                     }

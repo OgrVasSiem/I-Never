@@ -251,8 +251,6 @@ fun Tariffs(
             )
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
         DescriptionText(
             tariffType = tariffType,
             currencyCode = currencyCode,
@@ -327,7 +325,7 @@ private fun DefaultTariffBox(
                 changeTariffType()
             }
     ) {
-        if (currencyCode.isEmpty()) {
+        if (premiumPrice == BigDecimal.ZERO) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -440,7 +438,6 @@ private fun DescriptionText(
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
-            .padding(horizontal = 16.dp)
             .fillMaxWidth()
             .defaultMinSize(minHeight = 60.dp)
     ) {
@@ -450,7 +447,7 @@ private fun DescriptionText(
                     text,
                     moneyCurrencyFormatter(systemRegion, currencyCode, yearPrice).format(yearPrice)
                 ),
-                color = INeverTheme.colors.white,
+                color = INeverTheme.colors.primary,
                 fontSize = 14.sp,
                 lineHeight = 20.sp,
                 fontWeight = FontWeight(600),

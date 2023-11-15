@@ -54,6 +54,7 @@ import com.amplitude.api.Amplitude
 import com.foresko.gamenever.R
 import com.foresko.gamenever.core.utils.emptyString
 import com.foresko.gamenever.core.utils.storeUrl
+import com.foresko.gamenever.dataStore.Session
 import com.foresko.gamenever.ui.RootNavGraph
 import com.foresko.gamenever.ui.RootNavigator
 import com.foresko.gamenever.ui.destinations.destinations.AuthorizationBottomSheetDestination
@@ -87,7 +88,7 @@ fun SettingsScreen(
         navigateToAuthorizationBottomSheet = {
             rootNavigator.launchSingleTopNavigate(AuthorizationBottomSheetDestination())
         },
-        account = viewModel.account
+        session = viewModel.session
     )
 }
 
@@ -96,7 +97,7 @@ private fun SettingsScreen(
     popBackStack: () -> Unit,
     navigateToPremiumScreen: () -> Unit,
     navigateToAuthorizationBottomSheet: () -> Unit,
-    account: GoogleSignInAccount?
+    session: Session?
 ) {
     val context = LocalContext.current
 
@@ -159,7 +160,7 @@ private fun SettingsScreen(
                     onClick = {
                         Amplitude.getInstance().logEvent("account")
                         navigateToAuthorizationBottomSheet() },
-                    account = account
+                    session = session
                 )
 
                 DefaultSettingsButton(
@@ -416,7 +417,7 @@ private fun DefaultSettingsButton(
 fun DefaultSettingsButtonNew(
     @DrawableRes icon: Int,
     @StringRes functionName: Int,
-    account: GoogleSignInAccount? = null,
+    session: Session? = null,
     onClick: () -> Unit,
 ) {
     Box(modifier = Modifier
@@ -457,11 +458,11 @@ fun DefaultSettingsButtonNew(
                     maxLines = 2
                 )
 
-                if (account?.email != null) {
+                if (session?.email != null) {
                     Spacer(modifier = Modifier.height(4.dp))
 
                     Text(
-                        text = account.email ?: emptyString,
+                        text = session.email,
                         color = INeverTheme.colors.secondary,
                         style = INeverTheme.textStyles.body,
                         overflow = TextOverflow.Ellipsis,

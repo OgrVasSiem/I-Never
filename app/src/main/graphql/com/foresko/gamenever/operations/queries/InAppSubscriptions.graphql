@@ -1,0 +1,10 @@
+query InAppSubscriptionsQuery {
+    inAppSubscriptions {
+        id
+        price {
+            currencyCode
+            value
+        }
+        sku
+    }
+}

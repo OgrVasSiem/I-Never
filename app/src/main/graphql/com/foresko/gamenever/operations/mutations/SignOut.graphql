@@ -1,0 +1,11 @@
+mutation SignOutMutation {
+    signOut {
+        ... on SignOutSuccessResult {
+            __typename
+        }
+
+        ... on Error {
+            message
+        }
+    }
+}

@@ -1,0 +1,12 @@
+mutation RefreshAccessTokenMutation($refreshToken: RefreshToken!) {
+    refreshAccessToken(refreshToken: $refreshToken) {
+        ...on RefreshAccessTokenSuccessResult {
+            accessToken
+            refreshToken
+        }
+
+        ... on Error {
+            message
+        }
+    }
+}

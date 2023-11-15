@@ -8,8 +8,10 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.core.Either
+import com.foresko.gamenever.application.core.command.CommandDispatcher
 import com.foresko.gamenever.application.core.query.QueryDispatcher
 import com.foresko.gamenever.application.core.readModels.InAppSubscription
+import com.foresko.gamenever.application.operations.commands.authorizationCommands.SignInWithGoogleCommand
 import com.foresko.gamenever.application.operations.queries.dataStoreQueries.GetPremiumQuery
 import com.foresko.gamenever.application.operations.queries.dataStoreQueries.GetSessionQuery
 import com.foresko.gamenever.application.operations.queries.subscriptionQueries.GetInAppSubscriptionQuery
@@ -29,7 +31,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AuthorizationSBPViewModel @Inject constructor(
     private val queryDispatcher: QueryDispatcher,
-    private val networkStatusTracker: NetworkStatusTracker,
+    private val commandDispatcher: CommandDispatcher,
     val authResult: AuthResult,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
@@ -50,13 +52,10 @@ class AuthorizationSBPViewModel @Inject constructor(
 
     fun authorization(task: Task<GoogleSignInAccount>?) {
         viewModelScope.launch {
-            networkStatusTracker.networkStatus.collectLatest {
-                if (it is NetworkStatus.Available) {
-                    authResult.processTask(task)
-                } else {
-                    delay(500)
-                    changeNetworkConnectionErrorState(true)
-                }
+            when (commandDispatcher.dispatch(SignInWithGoogleCommand(task = task))) {
+                is Either.Right -> {}
+
+                is Either.Left -> changeNetworkConnectionErrorState(true)
             }
         }
     }

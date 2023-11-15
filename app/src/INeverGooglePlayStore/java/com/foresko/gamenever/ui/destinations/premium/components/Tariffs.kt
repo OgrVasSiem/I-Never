@@ -71,7 +71,7 @@ fun Tariffs(
     subscribeForSale: ProductDetails?,
     isPremiumScreen: Boolean = false
 ) {
-    var monthSubscribePrice by remember { mutableStateOf(BigDecimal(0)) }
+    var monthSubscribePrice by remember { mutableStateOf(BigDecimal.ZERO)) }
 
     var yearSubscribePrice by remember { mutableStateOf(BigDecimal(0)) }
     var monthPriceInYearlySubscribe by remember { mutableStateOf(BigDecimal(0)) }
@@ -335,7 +335,7 @@ private fun DefaultTariffBox(
                 changeTariffType()
             }
     ) {
-        if (currencyCode.isEmpty()) {
+        if (premiumPrice == BigDecimal.ZERO) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()

@@ -1,0 +1,18 @@
+mutation PurchaseInAppSubscription($devicePlatform: DevicePlatform!, $subscriptionId: ID!) {
+    purchaseInAppSubscription(devicePlatform: $devicePlatform, subscriptionId: $subscriptionId) {
+        ... on PurchaseInAppSubscriptionSuccessResult {
+            purchase {
+                confirmationUrl
+                id
+            }
+        }
+
+        ... on PurchaseInAppSubscriptionErrorDueToPaymentGatewayError {
+            message
+        }
+
+        ... on Error {
+            message
+        }
+    }
+}

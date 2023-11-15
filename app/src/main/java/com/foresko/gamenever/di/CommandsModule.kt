@@ -8,6 +8,8 @@ import com.foresko.gamenever.application.operations.commands.authorizationComman
 import com.foresko.gamenever.application.operations.commands.authorizationCommands.SignOutCommandHandlerImpl
 import com.foresko.gamenever.application.operations.commands.dataStoreCommand.UpdatePremiumCommand
 import com.foresko.gamenever.application.operations.commands.dataStoreCommand.UpdatePremiumCommandHandler
+import com.foresko.gamenever.application.operations.commands.dataStoreCommand.UpdateReminderAboutPremiumCommand
+import com.foresko.gamenever.application.operations.commands.dataStoreCommand.UpdateReminderAboutPremiumCommandHandler
 import com.foresko.gamenever.application.operations.commands.subscriptionCommand.PurchaseInAppSubscriptionCommand
 import com.foresko.gamenever.application.operations.commands.subscriptionCommand.PurchaseInAppSubscriptionCommandHandlerImpl
 import dagger.Binds
@@ -42,7 +44,7 @@ abstract class CommandsModule {
     @IntoMap
     @CommandHandlerKey(PurchaseInAppSubscriptionCommand::class)
     abstract fun bindPurchaseInAppSubscriptionCommandHandler(
-        purchaseInAppSubscriptionCommandHandler: PurchaseInAppSubscriptionCommandHandlerImpl
+        handler: PurchaseInAppSubscriptionCommandHandlerImpl
     ): CommandHandler<*, *>
 
     @Binds
@@ -50,5 +52,12 @@ abstract class CommandsModule {
     @CommandHandlerKey(UpdatePremiumCommand::class)
     abstract fun bindUpdatePremiumCommandHandler(
         handler: UpdatePremiumCommandHandler
+    ): CommandHandler<*, *>
+
+    @Binds
+    @IntoMap
+    @CommandHandlerKey(UpdateReminderAboutPremiumCommand::class)
+    abstract fun bindUpdateReminderAboutPremiumCommandHandler(
+        handler: UpdateReminderAboutPremiumCommandHandler
     ): CommandHandler<*, *>
 }
