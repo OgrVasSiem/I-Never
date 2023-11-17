@@ -25,6 +25,9 @@ interface CardDao {
     @Query("SELECT * FROM questions WHERE cardId = :cardId")
     suspend fun getQuestionsForCard(cardId: Long): List<Question>
 
+    @Query("SELECT cards.name FROM cards WHERE id in (:ids)")
+    fun getNamesByIds(ids: List<Long>): List<String>
+
     @Query("DELETE FROM cards")
     suspend fun clearAllCards()
 

@@ -25,10 +25,11 @@ import com.foresko.gamenever.R
 import com.foresko.gamenever.ui.RootNavGraph
 import com.foresko.gamenever.ui.RootNavigator
 import com.foresko.gamenever.ui.theme.INeverTheme
+import com.foresko.gamenever.ui.utils.transactions.UpDownTransaction
 import com.ramcosta.composedestinations.annotation.Destination
 
 @Composable
-@Destination
+@Destination(style = UpDownTransaction::class)
 @RootNavGraph
 fun TermOfUseScreen(
     rootNavigator: RootNavigator

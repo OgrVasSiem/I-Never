@@ -58,14 +58,21 @@ class MainViewModel @Inject constructor(
         _questionCounts.value = counts
     }
     init {
-        Amplitude.getInstance().logEvent("premium_screen")
+        Amplitude.getInstance().logEvent("main_screen")
 
         viewModelScope.launch {
             fetchAndCacheCards()
-            loadCardsFromDatabase()
-            monitorPremiumStatus()
-            initAds()
         }
+
+        viewModelScope.launch {
+            loadCardsFromDatabase()
+        }
+
+        viewModelScope.launch {
+            monitorPremiumStatus()
+        }
+
+        initAds()
 
         viewModelScope.launch {
             delay(700)
@@ -82,7 +89,7 @@ class MainViewModel @Inject constructor(
                 CardState(
                     cardData = mutableStateOf(card),
                     isSelected = mutableStateOf(false),
-                    showDialog = mutableStateOf(false),
+                    showDialog = mutableStateOf(false)
 
                 )
             }

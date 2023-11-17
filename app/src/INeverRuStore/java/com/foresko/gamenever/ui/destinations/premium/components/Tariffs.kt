@@ -50,6 +50,7 @@ import androidx.compose.ui.zIndex
 import androidx.core.app.LocaleManagerCompat
 import androidx.core.text.HtmlCompat
 import androidx.core.text.getSpans
+import com.amplitude.api.Amplitude
 import com.foresko.gamenever.R
 import com.foresko.gamenever.application.core.readModels.InAppSubscription
 import com.foresko.gamenever.ui.destination.premium.TariffType
@@ -59,6 +60,7 @@ import com.foresko.gamenever.ui.utils.formaters.moneyCurrencyFormatter
 import com.foresko.gamenever.ui.utils.formaters.numberFormatter
 import com.foresko.gamenever.ui.utils.linearGradient
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import org.json.JSONObject
 import java.math.BigDecimal
 import java.math.RoundingMode
 
@@ -159,7 +161,9 @@ fun Tariffs(
             DefaultTariffBox(
                 modifier = Modifier.weight(animatedScaleXMonth),
                 isActive = tariffType == TariffType.Month,
-                changeTariffType = { changeTariffType(TariffType.Month) },
+                changeTariffType = {
+                    Amplitude.getInstance().logEvent("onboarding_welcome_screen", JSONObject().put("type", "month"))
+                    changeTariffType(TariffType.Month) },
                 typeName = 1.formatAsMonthWordEnding().lowercase(),
                 premiumPrice = monthSubscribePrice,
                 currencyCode = currencyCode,
@@ -228,7 +232,9 @@ fun Tariffs(
                     modifier = Modifier
                         .align(Alignment.Center),
                     isActive = tariffType == TariffType.ThreeMonth,
-                    changeTariffType = { changeTariffType(TariffType.ThreeMonth) },
+                    changeTariffType = {
+                        Amplitude.getInstance().logEvent("onboarding_welcome_screen", JSONObject().put("type", "threeMonth"))
+                        changeTariffType(TariffType.ThreeMonth) },
                     typeName = 3.formatAsMonthWordEnding().lowercase(),
                     premiumPrice = threeMonthSubscribePrice,
                     currencyCode = currencyCode,
@@ -241,7 +247,9 @@ fun Tariffs(
 
             DefaultTariffBox(
                 isActive = tariffType == TariffType.Year,
-                changeTariffType = { changeTariffType(TariffType.Year) },
+                changeTariffType = {
+                    Amplitude.getInstance().logEvent("onboarding_welcome_screen", JSONObject().put("type", "year"))
+                    changeTariffType(TariffType.Year) },
                 typeName = stringResource(R.string.year).lowercase(),
                 premiumPrice = yearSubscribePrice,
                 monthPremiumPrice = monthPriceInYearlySubscribe,
@@ -439,7 +447,7 @@ private fun DescriptionText(
         contentAlignment = Alignment.Center,
         modifier = Modifier
             .fillMaxWidth()
-            .defaultMinSize(minHeight = 60.dp)
+            .defaultMinSize(minHeight = 40.dp)
     ) {
         if (yearPrice > BigDecimal.ZERO) {
             Text(

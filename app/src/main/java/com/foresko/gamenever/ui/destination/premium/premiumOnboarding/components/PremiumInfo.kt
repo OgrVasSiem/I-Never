@@ -79,15 +79,16 @@ fun PremiumInfo() {
                 modifier = Modifier
                     .padding(horizontal = 19.dp)
             ) {
-                Info(R.string.premium_info_first)
-
-                Spacer(modifier = Modifier.height(18.dp))
 
                 Info(R.string.premium_info_second)
 
                 Spacer(modifier = Modifier.height(18.dp))
 
                 Info(R.string.premium_info_thirth)
+
+                Spacer(modifier = Modifier.height(18.dp))
+
+                Info(R.string.premium_info_first)
             }
         }
     }
@@ -113,7 +114,7 @@ private fun Info(
         Text(
             text = stringResource(info),
             color = INeverTheme.colors.primary,
-            style = INeverTheme.textStyles.body2
+            style = INeverTheme.textStyles.onboardingBody2
         )
     }
 }

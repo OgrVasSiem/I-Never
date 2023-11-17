@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.amplitude.api.Amplitude
 import com.foresko.gamenever.R
 import com.foresko.gamenever.ui.RootNavGraph
 import com.foresko.gamenever.ui.RootNavigator
@@ -55,8 +56,12 @@ import com.foresko.gamenever.ui.destinations.premium.PremiumViewModel
 import com.foresko.gamenever.ui.premium.components.SubscriptionButtons
 import com.foresko.gamenever.ui.premium.components.Tariffs
 import com.foresko.gamenever.ui.theme.INeverTheme
+import com.foresko.gamenever.ui.utils.formaters.dateFormatter
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.ramcosta.composedestinations.annotation.Destination
+import org.json.JSONObject
+import java.time.Instant
+import java.time.ZoneId
 
 @Composable
 @Destination
@@ -146,7 +151,9 @@ private fun PremiumScreen(
                         changeTariffType = viewModel::changeTariffType
                     )
 
-                    Spacer(modifier = Modifier.height(32.dp))
+                    Spacer(modifier = Modifier.height(14.dp))
+
+                    Amplitude.getInstance().logEvent("subscription_button", JSONObject().put("path", "premium_screen"))
 
                     SubscriptionButtons(
                         navigateToPendingStatusPurchaseScreen = navigateToPendingStatusPurchaseScreen,
@@ -154,9 +161,9 @@ private fun PremiumScreen(
                         session = viewModel.session
                     )
                 } else {
-                    InfoAboutPremium()
+                    InfoAboutPremium(endDateInMilli = viewModel.premiumEndDateInEpochMilli)
                 }
-                Spacer(modifier = Modifier.height(32.dp))
+                Spacer(modifier = Modifier.height(24.dp))
 
                 PremiumPrivilege(premiumIsActive = viewModel.premiumIsActive ?: false)
 
@@ -317,36 +324,29 @@ fun Contacts() {
 
 
 @Composable
-private fun InfoAboutPremium() {
-    val context = LocalContext.current
+private fun InfoAboutPremium(
+    endDateInMilli: Long
+) {
+    Column {
+        if (endDateInMilli != 0L) {
+            Text(
+                text = stringResource(
+                    R.string.info_about_not_renewed_premium,
+                    dateFormatter.format(
+                        Instant.ofEpochMilli(endDateInMilli).atZone(ZoneId.systemDefault())
+                    )
+                ),
+                color = INeverTheme.colors.primary.copy(alpha = 0.70f),
+                fontWeight = FontWeight(400),
+                fontSize = 15.sp,
+                lineHeight = 20.sp,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .padding(horizontal = 32.dp)
+            )
 
-    val intent = remember {
-        Intent(
-            Intent.ACTION_VIEW,
-            Uri.parse("https://play.google.com/store/account/subscriptions?hl=ru&gl=US")
-        )
-    }
-
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = Modifier
-            .padding(horizontal = 40.dp)
-            .defaultMinSize(minHeight = 60.dp)
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(100.dp))
-            .background(INeverTheme.colors.accent, RoundedCornerShape(100.dp))
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = rememberRipple(bounded = true)
-            ) {
-                context.startActivity(intent)
-            }
-    ) {
-        Text(
-            text = stringResource(R.string.manage_subscribe),
-            color = INeverTheme.colors.white,
-            style = INeverTheme.textStyles.bodySemiBold
-        )
+            Spacer(modifier = Modifier.height(24.dp))
+        }
     }
 }
 

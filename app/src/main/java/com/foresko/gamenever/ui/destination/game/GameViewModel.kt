@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.amplitude.api.Amplitude
 import com.foresko.gamenever.core.ads.Ads
 import com.foresko.gamenever.core.rest.GameModel
 import com.foresko.gamenever.dataBase.repositories.CardRepository
@@ -66,7 +67,7 @@ class GameViewModel @Inject constructor(
 
     private var offset = 0
 
-    var premiumIsActive by mutableStateOf<Boolean?>(null)
+    var premiumIsActive by mutableStateOf(false)
         private set
 
     private var premiumEndDateInEpochMilli by mutableLongStateOf(0L)
@@ -87,10 +88,15 @@ class GameViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             loadCards()
-            initAds()
+        }
+
+        initAds()
+
+        viewModelScope.launch{
             monitorPremiumStatus()
         }
     }
+
     private suspend fun monitorPremiumStatus() {
         premiumDataStore.data.collectLatest {
             premiumEndDateInEpochMilli = it.expiryDateTime
@@ -138,10 +144,15 @@ class GameViewModel @Inject constructor(
                 questionsListNew = questionsListNew.drop(1)
                 currentQuestionNumber.intValue += 1
 
+                Amplitude
+                    .getInstance()
+                    .logEvent("game_card_swipe")
+
                 swipeCount++
-                if (swipeCount % 10 == 0) {
+                if (!premiumIsActive && (swipeCount % 10 == 0)) {
                     showAds(activity)
                 }
+
             }
         }
     }
@@ -151,11 +162,8 @@ class GameViewModel @Inject constructor(
             ads.initAds()
         }
     }
+
     private fun showAds(activity: Activity) {
-        if (premiumIsActive == true) {
-            return
-        }
-            ads.showAd(activity = activity) {
-            }
+        ads.showAd(activity = activity) {}
     }
 }

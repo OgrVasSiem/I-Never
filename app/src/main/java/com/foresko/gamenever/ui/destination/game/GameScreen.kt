@@ -35,7 +35,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.amplitude.api.Amplitude
 import com.foresko.gamenever.R
+import com.foresko.gamenever.core.rest.Card
 import com.foresko.gamenever.core.rest.GameModel
 import com.foresko.gamenever.core.utils.LocalActivity
 import com.foresko.gamenever.ui.RootNavGraph
@@ -43,9 +45,11 @@ import com.foresko.gamenever.ui.RootNavigator
 import com.foresko.gamenever.ui.destinations.destinations.PremiumScreenDestination
 import com.foresko.gamenever.ui.destinations.destinations.PrivacyPolicyScreenDestination
 import com.foresko.gamenever.ui.destinations.destinations.TermOfUseScreenDestination
+import com.foresko.gamenever.ui.destinations.game.UpgradeToPremiumDialog
 import com.foresko.gamenever.ui.swipe.CardStack
 import com.foresko.gamenever.ui.theme.INeverTheme
 import com.ramcosta.composedestinations.annotation.Destination
+import org.json.JSONObject
 
 @Composable
 @Destination(navArgsDelegate = GameScreenNavArgs::class)
@@ -53,11 +57,11 @@ import com.ramcosta.composedestinations.annotation.Destination
 fun GameScreen(
     viewModel: GameViewModel = hiltViewModel(),
     rootNavigator: RootNavigator,
-
     ) {
     GameScreenContent(
         rootNavigator = rootNavigator,
-        viewModel = viewModel
+        viewModel = viewModel,
+
     )
 }
 
@@ -65,7 +69,7 @@ fun GameScreen(
 @Composable
 fun GameScreenContent(
     rootNavigator: RootNavigator,
-    viewModel: GameViewModel
+    viewModel: GameViewModel,
 ) {
     val isLastCard by viewModel.isLastCard
 
@@ -74,7 +78,11 @@ fun GameScreenContent(
     val premiumIsActive = viewModel.premiumIsActive
 
     if (isLastCard) {
-        if (premiumIsActive == true) {
+        if (premiumIsActive) {
+            Amplitude
+                .getInstance()
+                .logEvent("last_question_screen")
+
             EndGameDialog(
                 showDialog = rememberSaveable { mutableStateOf(true) },
             )
@@ -83,6 +91,7 @@ fun GameScreenContent(
                 showDialog = rememberSaveable { mutableStateOf(true) },
                 navigateToPrivacyPolicy = { rootNavigator.navigate(PrivacyPolicyScreenDestination) },
                 navigateToTermOfUse = { rootNavigator.navigate(TermOfUseScreenDestination) },
+                rootNavigator = rootNavigator,
             )
         }
     }
@@ -199,7 +208,12 @@ fun TopAppBar(
                     .clickable(
                         interactionSource = MutableInteractionSource(),
                         indication = rememberRipple(bounded = false),
-                        onClick = popBackStack
+                        onClick = {
+                            Amplitude
+                                .getInstance()
+                                .logEvent("game_back_button")
+                            popBackStack()
+                        }
                     ),
                 tint = Color.Unspecified
             )
@@ -213,7 +227,12 @@ fun TopAppBar(
                     .clickable(
                         interactionSource = MutableInteractionSource(),
                         indication = rememberRipple(bounded = false),
-                        onClick = navigateToPremiumScreen
+                        onClick = {
+                            Amplitude.getInstance().logEvent("game_premium_button")
+
+                            Amplitude.getInstance().logEvent("premium_screen", JSONObject().put("path", "game_screen"))
+
+                            navigateToPremiumScreen() }
                     ),
                 tint = Color.Unspecified
             )

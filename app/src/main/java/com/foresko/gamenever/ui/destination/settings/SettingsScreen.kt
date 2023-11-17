@@ -64,6 +64,7 @@ import com.foresko.gamenever.ui.theme.INeverTheme
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.ramcosta.composedestinations.annotation.Destination
+import org.json.JSONObject
 
 @Composable
 @Destination
@@ -104,7 +105,7 @@ private fun SettingsScreen(
     val intentShareApp = remember {
         Intent().apply {
             this.action = Intent.ACTION_SEND
-            this.putExtra(Intent.EXTRA_TEXT,  Uri.parse(storeUrl))
+            this.putExtra(Intent.EXTRA_TEXT, Uri.parse(storeUrl))
             this.type = "text/plain"
         }
     }
@@ -146,21 +147,23 @@ private fun SettingsScreen(
 
                 Spacer(modifier = Modifier.height(14.dp))
 
-                DefaultSettingsButton(
-                    text = R.string.write_in_support,
-                    image = (R.drawable.ic_support),
-                    onClick = {
-                        Amplitude.getInstance().logEvent("support")
-                        context.startActivity(intentTelegram) }
-                )
-
                 DefaultSettingsButtonNew(
                     functionName = R.string.acc,
                     icon = (R.drawable.ic_authorization),
                     onClick = {
                         Amplitude.getInstance().logEvent("account")
-                        navigateToAuthorizationBottomSheet() },
+                        navigateToAuthorizationBottomSheet()
+                    },
                     session = session
+                )
+
+                DefaultSettingsButton(
+                    text = R.string.write_in_support,
+                    image = (R.drawable.ic_support),
+                    onClick = {
+                        Amplitude.getInstance().logEvent("support")
+                        context.startActivity(intentTelegram)
+                    }
                 )
 
                 DefaultSettingsButton(
@@ -168,7 +171,8 @@ private fun SettingsScreen(
                     image = (R.drawable.ic_star),
                     onClick = {
                         Amplitude.getInstance().logEvent("rate_app")
-                        context.startActivity(intentGooglePlay) }
+                        context.startActivity(intentGooglePlay)
+                    }
                 )
 
                 DefaultSettingsButton(
@@ -176,7 +180,8 @@ private fun SettingsScreen(
                     image = (R.drawable.ic_share),
                     onClick = {
                         Amplitude.getInstance().logEvent("share_app")
-                        context.startActivity(intentShareApp) }
+                        context.startActivity(intentShareApp)
+                    }
                 )
 
                 Spacer(modifier = Modifier.weight(1f))
@@ -266,6 +271,8 @@ private fun PremiumButton(
                 Amplitude
                     .getInstance()
                     .logEvent("premium_button")
+
+                Amplitude.getInstance().logEvent("premium_screen", JSONObject().put("path", "settings_screen"))
                 navigateToPremiumScreen()
             }
     ) {
@@ -405,7 +412,7 @@ private fun DefaultSettingsButton(
         }
 
         Divider(
-            color = INeverTheme.colors.primary.copy(alpha = 0.40f),
+            color = INeverTheme.colors.divider.copy(alpha = 0.20f),
             thickness = 0.75f.dp,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
@@ -420,75 +427,74 @@ fun DefaultSettingsButtonNew(
     session: Session? = null,
     onClick: () -> Unit,
 ) {
-    Box(modifier = Modifier
-        .clickable(
-            interactionSource = remember { MutableInteractionSource() },
-            indication = rememberRipple(bounded = true, color = INeverTheme.colors.accent)
-        ) {
-            try {
-                onClick()
-            } catch (ex: Exception) {
-                FirebaseCrashlytics
-                    .getInstance()
-                    .recordException(ex)
-            }
-        }
-        .padding(horizontal = 20.dp)
-        .defaultMinSize(minHeight = 72.dp)) {
-        Row(
-            modifier = Modifier.align(Alignment.Center)
-        ) {
-            Icon(
-                painter = painterResource(icon),
-                contentDescription = null,
-                tint = INeverTheme.colors.accent
-            )
-
-            Spacer(modifier = Modifier.width(16.dp))
-
-            Column(
-                modifier = Modifier
-                    .weight(1f, true)
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = rememberRipple(bounded = true, color = INeverTheme.colors.accent)
             ) {
-                Text(
-                    text = stringResource(functionName),
-                    color = INeverTheme.colors.primary,
-                    style = INeverTheme.textStyles.body,
-                    overflow = TextOverflow.Ellipsis,
-                    maxLines = 2
-                )
-
-                if (session?.email != null) {
-                    Spacer(modifier = Modifier.height(4.dp))
-
-                    Text(
-                        text = session.email,
-                        color = INeverTheme.colors.secondary,
-                        style = INeverTheme.textStyles.body,
-                        overflow = TextOverflow.Ellipsis,
-                        maxLines = 1
-                    )
+                try {
+                    onClick()
+                } catch (ex: Exception) {
+                    FirebaseCrashlytics
+                        .getInstance()
+                        .recordException(ex)
                 }
             }
+            .padding(horizontal = 20.dp, vertical = 22.dp)
+            .fillMaxWidth()
+    ) {
 
-            Spacer(modifier = Modifier.weight(1f))
+        Icon(
+            painter = painterResource(icon),
+            contentDescription = null,
+            tint = INeverTheme.colors.accent
+        )
 
-            Icon(
-                painter = painterResource(id = R.drawable.arrow_right),
-                contentDescription = null,
-                tint = Color.Unspecified,
-                modifier = Modifier
-                    .align(Alignment.CenterVertically)
-                    .padding(end = 10.dp)
-            )
-        }
-        Divider(
-            color = INeverTheme.colors.primary.copy(alpha = 0.40f),
-            thickness = 0.75f.dp,
+        Spacer(modifier = Modifier.width(16.dp))
+
+        Column(
             modifier = Modifier
-                .align(Alignment.BottomCenter)
+                .weight(1f, true)
+        ) {
+            Text(
+                text = stringResource(functionName),
+                color = INeverTheme.colors.primary,
+                style = INeverTheme.textStyles.body,
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 2
+            )
+
+            if (session?.email != null) {
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Text(
+                    text = session.email ?: "",
+                    color = INeverTheme.colors.primary.copy(alpha = 0.60f),
+                    fontSize = 13.sp,
+                    lineHeight = 18.sp,
+                    fontWeight = FontWeight(400),
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 1
+                )
+            }
+        }
+
+        Icon(
+            painter = painterResource(id = R.drawable.arrow_right),
+            contentDescription = null,
+            tint = Color.Unspecified,
+            modifier = Modifier
+                .align(Alignment.CenterVertically)
+                .padding(end = 10.dp)
         )
     }
+    Divider(
+        color = INeverTheme.colors.divider.copy(alpha = 0.20f),
+        thickness = 0.75f.dp,
+        modifier = Modifier.padding(horizontal = 20.dp)
+    )
 }
 
 private object Addresses {

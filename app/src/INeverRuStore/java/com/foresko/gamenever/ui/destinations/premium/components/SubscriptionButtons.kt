@@ -26,10 +26,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.amplitude.api.Amplitude
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.foresko.gamenever.R
 import com.foresko.gamenever.dataStore.Session
 import com.foresko.gamenever.ui.theme.INeverTheme
+import org.json.JSONObject
 
 @Composable
 fun SubscriptionButtons(

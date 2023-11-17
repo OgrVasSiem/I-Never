@@ -36,6 +36,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.amplitude.api.Amplitude
 import com.foresko.gamenever.R
 import com.foresko.gamenever.core.utils.LocalActivity
 import com.foresko.gamenever.ui.RootNavGraph
@@ -48,6 +49,7 @@ import com.foresko.gamenever.ui.destinations.destinations.SettingsScreenDestinat
 import com.foresko.gamenever.ui.theme.INeverTheme
 import com.ramcosta.composedestinations.annotation.Destination
 import kotlinx.coroutines.delay
+import org.json.JSONObject
 
 @Composable
 @Destination
@@ -98,6 +100,14 @@ fun MainScreenContent(
 
     val activity = LocalActivity.current
 
+    val activeCardsCount = cardStates.count { it.isSelected.value }
+
+    val textResource = when {
+        activeCardsCount == 1 -> R.string.selected_cards_info
+        activeCardsCount > 4 -> R.string.selected_cards_info3
+        else -> R.string.selected_cards_info2
+    }
+
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -147,9 +157,11 @@ fun MainScreenContent(
                             }
                         }
                     }
-                }
 
-                val activeCardsCount = cardStates.count { it.isSelected.value }
+                    if (activeCardsCount > 0) {
+                        item { Spacer(modifier = Modifier.height(80.dp)) }
+                    }
+                }
 
                 viewModel.loadQuestionsForActiveCards(activeCards)
 
@@ -186,7 +198,7 @@ fun MainScreenContent(
 
                             Text(
                                 text = stringResource(
-                                    R.string.selected_cards_info,
+                                    textResource,
                                     activeCardsCount,
                                     totalQuestions
                                 ),

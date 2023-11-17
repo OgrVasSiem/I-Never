@@ -23,16 +23,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import coil.compose.rememberAsyncImagePainter
+import com.amplitude.api.Amplitude
 import com.foresko.gamenever.R
 import com.foresko.gamenever.core.rest.Card
-import com.foresko.gamenever.ui.destination.game.CloseButton
+import com.foresko.gamenever.core.rest.GameModel
+import com.foresko.gamenever.ui.destinations.game.CloseButton
 import com.foresko.gamenever.ui.theme.INeverTheme
 
 
@@ -40,7 +45,7 @@ import com.foresko.gamenever.ui.theme.INeverTheme
 fun TestGameDialog(
     card: Card,
     showDialog: MutableState<Boolean>,
-    showAds: () -> Unit
+    showAds: () -> Unit,
 ) {
     if (showDialog.value) {
         Dialog(onDismissRequest = { showDialog.value = false }) {
@@ -57,7 +62,8 @@ fun TestGameDialog(
 
                     PremDialog(
                         card.alertImage,
-                        showAds = showAds
+                        showAds = showAds,
+                        name = card.name
                     )
                 }
             }
@@ -68,8 +74,27 @@ fun TestGameDialog(
 @Composable
 fun PremDialog(
     iconUri: String,
-    showAds: () -> Unit
+    showAds: () -> Unit,
+    name: String,
 ) {
+    val context = LocalContext.current
+    val fullText = stringResource(id = R.string.get_free, name)
+    val boldPart = name
+    val annotatedString = buildAnnotatedString {
+        val boldStartIndex = fullText.indexOf(boldPart)
+        val boldEndIndex = boldStartIndex + boldPart.length
+
+        append(fullText)
+
+        if (boldStartIndex >= 0) {
+            addStyle(
+                style = SpanStyle(fontWeight = FontWeight.Bold),
+                start = boldStartIndex,
+                end = boldEndIndex
+            )
+        }
+    }
+
     Column(
         modifier = Modifier
             .padding(horizontal = 20.dp),
@@ -96,7 +121,7 @@ fun PremDialog(
             modifier = Modifier.height(10.dp)
         )
         Text(
-            text = stringResource(id = R.string.get_free),
+            text = annotatedString,
             color = INeverTheme.colors.primary,
             style = INeverTheme.textStyles.body,
             textAlign = TextAlign.Center
@@ -126,6 +151,8 @@ private fun PremiumButton(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = rememberRipple(bounded = true)
             ) {
+                Amplitude.getInstance().logEvent("watch_ads_button")
+
                  showAds()
             }
     ) {

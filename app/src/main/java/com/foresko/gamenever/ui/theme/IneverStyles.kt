@@ -26,7 +26,8 @@ data class INeverStyles(
     val textCards: TextStyle,
     val gameOver: TextStyle,
     val gameOverSubtitle: TextStyle,
-    val footerSettings: TextStyle
+    val footerSettings: TextStyle,
+    val onboardingBody2: TextStyle
 ) {
 
     constructor() : this(
@@ -39,6 +40,11 @@ data class INeverStyles(
         body2 = TextStyle(
             fontSize = 15.sp,
             fontWeight = FontWeight(400),
+            lineHeight = 22.sp
+        ),
+        onboardingBody2 = TextStyle(
+            fontSize = 15.sp,
+            fontWeight = FontWeight(600),
             lineHeight = 22.sp
         ),
         bodySemiBold = TextStyle(

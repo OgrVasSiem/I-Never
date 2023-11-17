@@ -1,7 +1,5 @@
 package com.foresko.gamenever.ui.destinations.premium.premiumOnboarding
 
-import android.content.Intent
-import android.net.Uri
 import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -23,7 +21,6 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,10 +29,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -54,10 +51,10 @@ import com.foresko.gamenever.ui.destinations.destinations.TermOfUseScreenDestina
 import com.foresko.gamenever.ui.premium.components.SubscriptionButtons
 import com.foresko.gamenever.ui.premium.components.Tariffs
 import com.foresko.gamenever.ui.theme.INeverTheme
-import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.ramcosta.composedestinations.annotation.Destination
 import kotlinx.coroutines.delay
 import com.amplitude.api.Amplitude
+import org.json.JSONObject
 
 @Composable
 @Destination
@@ -94,7 +91,7 @@ fun PremiumOnboardingScreen(
     if (initializeScreen) {
         PremiumOnboardingScreen(
             viewModel = viewModel,
-            navigateToChooseZodiacSign = {
+            navigateToChooseGameSign = {
                 rootNavigator.navigate(
                     MainScreenDestination()
                 )
@@ -121,7 +118,7 @@ fun PremiumOnboardingScreen(
 @Composable
 private fun PremiumOnboardingScreen(
     viewModel: PremiumViewModel,
-    navigateToChooseZodiacSign: () -> Unit,
+    navigateToChooseGameSign: () -> Unit,
     navigateToTermOfUse: () -> Unit,
     navigateToPrivacyPolicy: () -> Unit,
     navigateToAuthorizationSBPBottomSheet: () -> Unit,
@@ -138,7 +135,7 @@ private fun PremiumOnboardingScreen(
                 .background(Color.Transparent)
                 .navigationBarsPadding()
                 .statusBarsPadding(),
-            topBar = { TopAppBar(navigateToChooseZodiacSign = navigateToChooseZodiacSign) }
+            topBar = { TopAppBar(navigateToChooseGameSign = navigateToChooseGameSign) }
         ) { paddingValues ->
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -155,13 +152,17 @@ private fun PremiumOnboardingScreen(
                     tariffType = viewModel.tariffType,
                     changeTariffType = viewModel::changeTariffType
                 )
+
+                Amplitude.getInstance().logEvent("subscription_button", JSONObject().put("path", "onboarding_welcome_screen"))
+                Spacer(modifier = Modifier.height(10.dp))
+
                 SubscriptionButtons(
                     navigateToPendingStatusPurchaseScreen = navigateToPendingStatusPurchaseScreen,
                     navigateToAuthorizationSBPBottomSheet = navigateToAuthorizationSBPBottomSheet,
                     session = viewModel.session
                 )
 
-                Spacer(modifier = Modifier.height(30.dp))
+                Spacer(modifier = Modifier.height(20.dp))
 
                 Info(
                     navigateToTermOfUse = navigateToTermOfUse,
@@ -174,12 +175,12 @@ private fun PremiumOnboardingScreen(
 
 @Composable
 private fun TopAppBar(
-    navigateToChooseZodiacSign: () -> Unit
+    navigateToChooseGameSign: () -> Unit
 ) {
     TopAppBar(
         startItem = { modifier ->
             IconButton(
-                onClick = navigateToChooseZodiacSign,
+                onClick = navigateToChooseGameSign,
                 modifier = modifier
             ) {
                 Icon(
@@ -197,41 +198,23 @@ private fun Info(
     navigateToTermOfUse: () -> Unit,
     navigateToPrivacyPolicy: () -> Unit
 ) {
-    val context = LocalContext.current
-
-    val intent = remember {
-        Intent(
-            Intent.ACTION_VIEW,
-            Uri.parse("https://play.google.com/store/account/subscriptions?hl=ru&gl=US")
-        )
-    }
-
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(26.dp)
     ) {
         InfoItem(
-            text = R.string.privacy_policy_eng,
+            text = R.string.privacy_policy_on,
             onClick = navigateToPrivacyPolicy
         )
 
         InfoItem(
-            text = R.string.term_of_use_eng,
+            text = R.string.term_of_use_on,
             onClick = navigateToTermOfUse
-        )
-
-        InfoItem(
-            text = R.string.restore,
-            onClick = {
-                try {
-                    context.startActivity(intent)
-                } catch (ex: Exception) {
-                    FirebaseCrashlytics.getInstance().recordException(ex)
-                }
-            }
         )
     }
 }
+
+
 
 @Composable
 private fun InfoItem(
@@ -244,6 +227,7 @@ private fun InfoItem(
         fontSize = 12.sp,
         lineHeight = 14.sp,
         fontWeight = FontWeight(400),
+        textAlign = TextAlign.Center,
         modifier = Modifier
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },

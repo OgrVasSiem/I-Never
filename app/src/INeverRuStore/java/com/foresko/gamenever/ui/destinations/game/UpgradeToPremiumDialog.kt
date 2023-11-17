@@ -1,5 +1,6 @@
-package com.foresko.gamenever.ui.destination.game
+package com.foresko.gamenever.ui.destinations.game
 
+import android.util.Log
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -38,14 +39,23 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import com.amplitude.api.Amplitude
 import com.foresko.gamenever.R
+import com.foresko.gamenever.core.rest.Card
+import com.foresko.gamenever.core.rest.GameModel
+import com.foresko.gamenever.ui.RootNavigator
+import com.foresko.gamenever.ui.destination.game.GameScreenContent
+import com.foresko.gamenever.ui.destinations.destinations.PremiumScreenDestination
+import com.foresko.gamenever.ui.destinations.destinations.SettingsScreenDestination
 import com.foresko.gamenever.ui.theme.INeverTheme
+import org.json.JSONObject
 
 @Composable
 fun UpgradeToPremiumDialog(
     showDialog: MutableState<Boolean>,
     navigateToTermOfUse: () -> Unit,
-    navigateToPrivacyPolicy: () -> Unit
+    navigateToPrivacyPolicy: () -> Unit,
+    rootNavigator: RootNavigator,
 ) {
     if (showDialog.value) {
         Dialog(onDismissRequest = { showDialog.value = false }) {
@@ -61,7 +71,8 @@ fun UpgradeToPremiumDialog(
 
                     FinalDialog(
                         navigateToTermOfUse = navigateToTermOfUse,
-                        navigateToPrivacyPolicy = navigateToPrivacyPolicy
+                        navigateToPrivacyPolicy = navigateToPrivacyPolicy,
+                        rootNavigator = rootNavigator,
                     )
                 }
             }
@@ -72,7 +83,8 @@ fun UpgradeToPremiumDialog(
 @Composable
 private fun FinalDialog(
     navigateToTermOfUse: () -> Unit,
-    navigateToPrivacyPolicy: () -> Unit
+    navigateToPrivacyPolicy: () -> Unit,
+    rootNavigator: RootNavigator,
 ) {
     Column(
         modifier = Modifier
@@ -94,18 +106,10 @@ private fun FinalDialog(
             style = INeverTheme.textStyles.text2,
             textAlign = TextAlign.Center
         )
-        Spacer(
-            modifier = Modifier.height(62.dp)
-        )
-        Text(
-            text = stringResource(id = R.string.premium_alert_subtitle),
-            color = INeverTheme.colors.primary,
-            style = INeverTheme.textStyles.boldText
-        )
 
         Spacer(modifier = Modifier.height(30.dp))
 
-        PremiumButton()
+        PremiumButton(rootNavigator = rootNavigator)
 
         Spacer(modifier = Modifier.height(46.dp))
 
@@ -117,13 +121,16 @@ private fun FinalDialog(
         Spacer(modifier = Modifier.height(20.dp))
     }
 }
+
 @Composable
 fun CloseButton(onDismissRequest: () -> Unit) {
     Box(
         contentAlignment = Alignment.TopEnd,
         modifier = Modifier.fillMaxWidth()
     ) {
-        IconButton(onClick = { onDismissRequest() }) {
+        IconButton(onClick = {
+            Amplitude.getInstance().logEvent("reward_ads_close")
+            onDismissRequest() }) {
             Icon(
                 imageVector = Icons.Default.Close,
                 contentDescription = "Close"
@@ -137,7 +144,8 @@ private fun Info(
     navigateToTermOfUse: () -> Unit,
     navigateToPrivacyPolicy: () -> Unit
 ) {
-    Row( modifier = Modifier.padding(horizontal = 20.dp)
+    Row(
+        modifier = Modifier.padding(horizontal = 20.dp)
     ) {
         InfoItem(
             text = R.string.term_of_use,
@@ -178,7 +186,9 @@ private fun InfoItem(
 }
 
 @Composable
-private fun PremiumButton() {
+private fun PremiumButton(
+    rootNavigator: RootNavigator
+) {
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
@@ -189,10 +199,15 @@ private fun PremiumButton() {
                 interactionSource = remember { MutableInteractionSource() },
                 indication = rememberRipple(bounded = true)
             ) {
+                Amplitude.getInstance().logEvent("subscription_button", JSONObject().put("path", "last_question_screen"))
+
+                rootNavigator.navigate(
+                    PremiumScreenDestination()
+                )
             }
     ) {
         Text(
-            text = stringResource(R.string.try_free),
+            text = stringResource(R.string.try_now),
             color = INeverTheme.colors.white,
             fontSize = 17.sp,
             lineHeight = 21.sp,

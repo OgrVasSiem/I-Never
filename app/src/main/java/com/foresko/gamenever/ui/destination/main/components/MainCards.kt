@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.times
 import coil.compose.rememberAsyncImagePainter
 import com.foresko.gamenever.R
 import com.foresko.gamenever.core.rest.Card
+import com.foresko.gamenever.core.rest.GameModel
 import com.foresko.gamenever.ui.theme.INeverTheme
 import com.foresko.gamenever.ui.utils.linearGradient
 import kotlinx.coroutines.delay
@@ -45,7 +46,7 @@ fun MainCard(
     questionsCount: Map<Long, Int>,
     isPremiumActive: Boolean,
     cardState: CardState,
-    showAds: () -> Unit
+    showAds: () -> Unit,
 ) {
     val isFreeTopic = card.freeTopic || isPremiumActive
 
@@ -84,7 +85,7 @@ fun MainCard(
         TestGameDialog(
             showAds = showAds,
             card = card,
-            showDialog = cardState.showDialog
+            showDialog = cardState.showDialog,
         )
     }
 }
