@@ -78,7 +78,8 @@ private fun SBPSubscription(
             }
     ) {
         Row(
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(vertical = 16.dp)
         ) {
             Text(
                 text = stringResource(R.string.payment_through_SBP),

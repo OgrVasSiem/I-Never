@@ -35,6 +35,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.PlatformTextStyle
@@ -278,6 +279,8 @@ private fun DefaultTariffBox(
     currencyCode: String,
     monthPremiumPrice: BigDecimal? = null
 ) {
+    val smallScreen = LocalConfiguration.current.screenHeightDp.dp < 650.dp
+
     val systemRegion =
         LocaleManagerCompat.getSystemLocales(LocalContext.current).get(0)!!.toLanguageTag()
 
@@ -308,17 +311,27 @@ private fun DefaultTariffBox(
 
     val animatedHeight by animateDpAsState(if (!isActive) 114.dp else 138.dp, label = "")
 
+    val animatedHeightMinScreen by animateDpAsState(if (!isActive) 104.dp else 128.dp, label = "")
+
     val animatedValueTypeTextCount by animateFloatAsState(if (!isActive) 32f else 38f, label = "")
+
+    val animatedValueTypeTextCountSmallScreen by animateFloatAsState(if (!isActive) 28f else 34f, label = "")
 
     val animatedFontSizeTypeName by animateFloatAsState(if (!isActive) 14f else 16f, label = "")
 
-    val animatedValuePrice by animateFloatAsState(if (!isActive) 17f else 20f, label = "")
+    val animatedFontSizeTypeNameSmallScreen by animateFloatAsState(if (!isActive) 12f else 14f, label = "")
+
+    val animatedValuePrice by animateFloatAsState(if (!isActive) 14f else 17f, label = "")
+
+    val animatedValuePriceSmallScreen by animateFloatAsState(if (!isActive) 14f else 17f, label = "")
 
     val animatedValueMonthPrice by animateFloatAsState(if (!isActive) 13f else 14f, label = "")
 
+    val animatedValueMonthPriceSmallScreen by animateFloatAsState(if (!isActive) 10f else 13f, label = "")
+
     Box(
         modifier = modifier
-            .height(animatedHeight)
+            .height(if (!smallScreen) animatedHeight else animatedHeightMinScreen)
             .clip(RoundedCornerShape(18.dp))
             .background(monthPriceBackgroundColor)
             .border(
@@ -357,8 +370,8 @@ private fun DefaultTariffBox(
                 Text(
                     text = typeTextCount.toString(),
                     color = textColor,
-                    fontSize = animatedValueTypeTextCount.sp,
-                    lineHeight = animatedValueTypeTextCount.sp,
+                    fontSize = (if (!smallScreen) animatedValueTypeTextCount.sp else animatedValueTypeTextCountSmallScreen.sp),
+                    lineHeight = (if (!smallScreen) animatedValueTypeTextCount.sp else animatedValueTypeTextCountSmallScreen.sp),
                     fontWeight = FontWeight(600),
                     style = TextStyle(
                         platformStyle = PlatformTextStyle(
@@ -370,7 +383,7 @@ private fun DefaultTariffBox(
                 Text(
                     text = typeName.lowercase(),
                     color = textColor,
-                    fontSize = animatedFontSizeTypeName.sp,
+                    fontSize = (if (!smallScreen) animatedFontSizeTypeName.sp else animatedFontSizeTypeNameSmallScreen.sp),
                     lineHeight = 16.sp,
                     fontWeight = FontWeight(400),
                     style = TextStyle(
@@ -386,7 +399,7 @@ private fun DefaultTariffBox(
                     text = moneyCurrencyFormatter(systemRegion, currencyCode, premiumPrice)
                         .format(premiumPrice),
                     color = textColor,
-                    fontSize = animatedValuePrice.sp,
+                    fontSize = (if (!smallScreen) animatedValuePrice.sp else animatedValuePriceSmallScreen.sp),
                     lineHeight = 22.sp,
                     fontWeight = FontWeight(600),
                     maxLines = 1,
@@ -404,7 +417,7 @@ private fun DefaultTariffBox(
                             stringResource(R.string.month_1).lowercase()
                         ),
                         color = monthPriceTextColor,
-                        fontSize = animatedValueMonthPrice.sp,
+                        fontSize =(if (!smallScreen) animatedValueMonthPrice.sp else animatedValueMonthPriceSmallScreen.sp),
                         lineHeight = 16.sp,
                         fontWeight = FontWeight(400),
                         maxLines = 1,
@@ -447,7 +460,6 @@ private fun DescriptionText(
         contentAlignment = Alignment.Center,
         modifier = Modifier
             .fillMaxWidth()
-            .defaultMinSize(minHeight = 40.dp)
     ) {
         if (yearPrice > BigDecimal.ZERO) {
             Text(

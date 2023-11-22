@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Scaffold
@@ -29,6 +30,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -84,7 +86,7 @@ fun PremiumOnboardingScreen(
 
         delay(300)
 
-        if (viewModel.premiumIsActive != null  && viewModel.onboardingState != null) initializeScreen =
+        if (viewModel.premiumIsActive != null && viewModel.onboardingState != null) initializeScreen =
             true
     }
 
@@ -124,53 +126,49 @@ private fun PremiumOnboardingScreen(
     navigateToAuthorizationSBPBottomSheet: () -> Unit,
     navigateToPendingStatusPurchaseScreen: () -> Unit
 ) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(INeverTheme.colors.white),
-    ) {
-        Scaffold(
-            backgroundColor = Color.Transparent,
+    val smallScreen = LocalConfiguration.current.screenHeightDp.dp < 650.dp
+
+    Scaffold(
+        topBar = { TopAppBar(navigateToChooseGameSign = navigateToChooseGameSign) }
+    ) { paddingValues ->
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
-                .background(Color.Transparent)
-                .navigationBarsPadding()
-                .statusBarsPadding(),
-            topBar = { TopAppBar(navigateToChooseGameSign = navigateToChooseGameSign) }
-        ) { paddingValues ->
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .padding(paddingValues)
-                    .offset(y = (-20).dp)
-            ) {
-                PremiumInfo()
+                .padding(paddingValues)
+                .offset(y = (-45).dp)
+        ) {
+            PremiumInfo()
 
-                Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
-                Tariffs(
-                    inAppSubscriptions = viewModel.inAppSubscriptions,
-                    tariffType = viewModel.tariffType,
-                    changeTariffType = viewModel::changeTariffType
-                )
+            Tariffs(
+                inAppSubscriptions = viewModel.inAppSubscriptions,
+                tariffType = viewModel.tariffType,
+                changeTariffType = viewModel::changeTariffType
+            )
 
-                Amplitude.getInstance().logEvent("subscription_button", JSONObject().put("path", "onboarding_welcome_screen"))
-                Spacer(modifier = Modifier.height(10.dp))
+            Amplitude.getInstance().logEvent(
+                "subscription_button",
+                JSONObject().put("path", "onboarding_welcome_screen")
+            )
 
-                SubscriptionButtons(
-                    navigateToPendingStatusPurchaseScreen = navigateToPendingStatusPurchaseScreen,
-                    navigateToAuthorizationSBPBottomSheet = navigateToAuthorizationSBPBottomSheet,
-                    session = viewModel.session
-                )
+            Spacer(modifier = Modifier.height(15.dp))
 
-                Spacer(modifier = Modifier.height(20.dp))
+            SubscriptionButtons(
+                navigateToPendingStatusPurchaseScreen = navigateToPendingStatusPurchaseScreen,
+                navigateToAuthorizationSBPBottomSheet = navigateToAuthorizationSBPBottomSheet,
+                session = viewModel.session
+            )
 
-                Info(
-                    navigateToTermOfUse = navigateToTermOfUse,
-                    navigateToPrivacyPolicy = navigateToPrivacyPolicy
-                )
-            }
+            Spacer(modifier = Modifier.weight(1f))
+
+            Info(
+                navigateToTermOfUse = navigateToTermOfUse,
+                navigateToPrivacyPolicy = navigateToPrivacyPolicy
+            )
         }
     }
+
 }
 
 @Composable
@@ -198,22 +196,39 @@ private fun Info(
     navigateToTermOfUse: () -> Unit,
     navigateToPrivacyPolicy: () -> Unit
 ) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(26.dp)
-    ) {
-        InfoItem(
-            text = R.string.privacy_policy_on,
-            onClick = navigateToPrivacyPolicy
-        )
+    val smallScreen = LocalConfiguration.current.screenHeightDp.dp < 650.dp
 
-        InfoItem(
-            text = R.string.term_of_use_on,
-            onClick = navigateToTermOfUse
-        )
-    }
+    if (!smallScreen) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(26.dp)
+        ) {
+            InfoItem(
+                text = R.string.privacy_policy_on,
+                onClick = navigateToPrivacyPolicy
+            )
+
+            InfoItem(
+                text = R.string.term_of_use_on,
+                onClick = navigateToTermOfUse
+            )
+        }
+    } else
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(26.dp)
+        ) {
+            InfoItemSmallScreen(
+                text = R.string.privacy_policy_on,
+                onClick = navigateToPrivacyPolicy
+            )
+
+            InfoItemSmallScreen(
+                text = R.string.term_of_use_on,
+                onClick = navigateToTermOfUse
+            )
+        }
 }
-
 
 
 @Composable
@@ -227,6 +242,28 @@ private fun InfoItem(
         fontSize = 12.sp,
         lineHeight = 14.sp,
         fontWeight = FontWeight(400),
+        textAlign = TextAlign.Center,
+        modifier = Modifier
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null
+            ) {
+                onClick()
+            }
+    )
+}
+
+@Composable
+private fun InfoItemSmallScreen(
+    @StringRes text: Int,
+    onClick: () -> Unit
+) {
+    Text(
+        text = stringResource(text),
+        color = INeverTheme.colors.primary.copy(alpha = 0.50f),
+        fontSize = 8.sp,
+        lineHeight = 8.sp,
+        fontWeight = FontWeight(300),
         textAlign = TextAlign.Center,
         modifier = Modifier
             .clickable(

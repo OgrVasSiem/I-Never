@@ -38,7 +38,7 @@ object ApolloModule {
     @UnauthenticatedApolloClient
     fun provideUnauthenticatedApolloClient(): ApolloClient {
         return ApolloClient.Builder()
-            .httpServerUrl("https://api.dev.nevergame.foresko.com/v1/graphql")
+            .httpServerUrl("https://api.nevergame.foresko.com/v1/graphql")
             .httpExposeErrorBody(true)
             .build()
     }
@@ -138,7 +138,7 @@ object ApolloModule {
         }
 
         return ApolloClient.Builder()
-            .httpServerUrl("https://api.dev.nevergame.foresko.com/v1/graphql")
+            .httpServerUrl("https://api.nevergame.foresko.com/v1/graphql")
             .httpExposeErrorBody(true)
             .customScalarAdapters(customScalarAdapters)
             .okHttpClient(okHttpClient)

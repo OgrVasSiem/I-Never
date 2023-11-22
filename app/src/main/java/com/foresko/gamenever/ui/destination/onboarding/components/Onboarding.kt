@@ -84,7 +84,7 @@ fun Onboarding(
             )
         }
 
-        Spacer(modifier = Modifier.height(46.dp))
+        Spacer(modifier = Modifier.height(30.dp))
 
         Box(
             contentAlignment = Alignment.Center,

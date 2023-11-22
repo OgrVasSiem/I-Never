@@ -13,6 +13,7 @@
     <string name="info_description_onboarding_thirth">Соберитесь компанией и приготовьтесь  к безудержному веселью</string>
     <string name="continue_text">Продолжить</string>
     <string name="horoscopes_premium">Premium</string>
+    <string name="premium_info"><![CDATA[Безлимитный доступ без рекламы \nи ограничений]]></string>
     <string name="premium_info_first">Без рекламы</string>
     <string name="premium_info_second">Доступ ко всем пакетам карт</string>
     <string name="premium_info_thirth">Регулярные обновления категорий</string>

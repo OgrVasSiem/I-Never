@@ -31,7 +31,7 @@ import com.foresko.gamenever.ui.theme.INeverTheme
 @Composable
 fun PremiumInfo() {
     val configuration = LocalConfiguration.current
-    val screenWidth = configuration.screenWidthDp.dp
+    val screenWidth = configuration.screenHeightDp.dp
 
     Box(
         modifier = Modifier
@@ -39,10 +39,10 @@ fun PremiumInfo() {
             .fillMaxWidth()
     ) {
         Image(
-            painter = painterResource(R.drawable.img_premium_info_bg),
+            painter = painterResource(R.drawable.img_premium_info_bg1),
             contentDescription = null,
             modifier = Modifier
-                .size(if (screenWidth > 375.dp) 370.dp else 290.dp)
+                .size(if (screenWidth > 650.dp) 370.dp else 270.dp)
                 .align(Alignment.Center),
             contentScale = ContentScale.FillBounds,
         )
@@ -56,7 +56,7 @@ fun PremiumInfo() {
                 painter = painterResource(R.drawable.img_premium_onbording),
                 contentDescription = null,
                 modifier = Modifier
-                    .size(width = 174.dp, height = 116.dp)
+                    .size(if (screenWidth > 650.dp) 159.dp else 110.dp)
                     .align(Alignment.CenterHorizontally),
                 contentScale = ContentScale.Fit
             )
@@ -65,30 +65,40 @@ fun PremiumInfo() {
                 text = stringResource(R.string.horoscopes_premium),
                 color = INeverTheme.colors.primary,
                 fontSize = 30.sp,
-                lineHeight = 32.sp,
+                lineHeight = 20.sp,
                 fontWeight = FontWeight(700),
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
             )
+            if (screenWidth > 650.dp) {
+                Spacer(modifier = Modifier.height(26.dp))
+            }else {Spacer(modifier = Modifier.height(10.dp))}
 
-            Spacer(modifier = Modifier.height(26.dp))
+            if (screenWidth > 650.dp) {
+                Column(
+                    modifier = Modifier
+                        .padding(horizontal = 19.dp)
+                ) {
+                    Info(R.string.premium_info_second)
 
+                    Spacer(modifier = Modifier.height(16.dp))
 
-            Column(
-                modifier = Modifier
-                    .padding(horizontal = 19.dp)
-            ) {
+                    Info(R.string.premium_info_thirth)
 
-                Info(R.string.premium_info_second)
+                    Spacer(modifier = Modifier.height(16.dp))
 
-                Spacer(modifier = Modifier.height(18.dp))
-
-                Info(R.string.premium_info_thirth)
-
-                Spacer(modifier = Modifier.height(18.dp))
-
-                Info(R.string.premium_info_first)
+                    Info(R.string.premium_info_first)
+                }
+            }else {
+                Text(
+                    text = stringResource(R.string.premium_info),
+                    color = INeverTheme.colors.primary,
+                    style = INeverTheme.textStyles.onboardingBody2,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                )
             }
         }
     }

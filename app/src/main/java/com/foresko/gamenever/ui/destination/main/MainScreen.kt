@@ -24,7 +24,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -36,7 +35,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.amplitude.api.Amplitude
 import com.foresko.gamenever.R
 import com.foresko.gamenever.core.utils.LocalActivity
 import com.foresko.gamenever.ui.RootNavGraph
@@ -48,8 +46,6 @@ import com.foresko.gamenever.ui.destinations.destinations.RulesScreenDestination
 import com.foresko.gamenever.ui.destinations.destinations.SettingsScreenDestination
 import com.foresko.gamenever.ui.theme.INeverTheme
 import com.ramcosta.composedestinations.annotation.Destination
-import kotlinx.coroutines.delay
-import org.json.JSONObject
 
 @Composable
 @Destination

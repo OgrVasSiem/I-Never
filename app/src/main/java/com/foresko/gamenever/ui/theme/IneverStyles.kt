@@ -43,7 +43,7 @@ data class INeverStyles(
             lineHeight = 22.sp
         ),
         onboardingBody2 = TextStyle(
-            fontSize = 15.sp,
+            fontSize = 18.sp,
             fontWeight = FontWeight(600),
             lineHeight = 22.sp
         ),

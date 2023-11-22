@@ -133,7 +133,7 @@ private fun OnboardingScreen(
             ) {
                 when (it) {
                     0 -> Onboarding(
-                        image = R.drawable.img_onboarding,
+                        image = R.drawable.img_onboarding_1,
                         info = R.string.info_onboarding_first,
                         infoDescription = R.string.info_description_onboarding_first,
                         buttonName = R.string.great,

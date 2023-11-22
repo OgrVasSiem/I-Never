@@ -7,5 +7,4 @@ data class CardState(
     val cardData: MutableState<Card?>,
     val isSelected: MutableState<Boolean>,
     val showDialog: MutableState<Boolean>,
-
 )
