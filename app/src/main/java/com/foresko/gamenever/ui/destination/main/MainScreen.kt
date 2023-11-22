@@ -140,7 +140,7 @@ fun MainScreenContent(
                                 ) {
                                     MainCard(
                                         card = card,
-                                        isPremiumActive = viewModel.premiumIsActive ?: false,
+                                        isPremiumActive = viewModel.premiumIsActive,
                                         cardState = cardStates.find { it.cardData.value == card }!!,
                                         questionsCount = questionCounts,
                                         showAds = {

@@ -46,7 +46,7 @@ class MainViewModel @Inject constructor(
 
     private var premiumEndDateInEpochMilli by mutableLongStateOf(0L)
 
-    var premiumIsActive by mutableStateOf<Boolean?>(null)
+    var premiumIsActive by mutableStateOf(false)
         private set
 
     private val _questionCounts = MutableStateFlow<Map<Long, Int>>(emptyMap())
