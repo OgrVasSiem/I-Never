@@ -104,7 +104,7 @@
     <string name="enter_with_google">Войти с Google</string>
     <string name="not_now">Не сейчас</string>
     <string name="info_about_not_renewed_premium">Подписка действительна до %1$s, она не будет продлена автоматически.</string>
-    <string name="version">Версия приложения 1.1</string>
+    <string name="version">Версия приложения 1.0.2</string>
     <string name="developed">Разработано в</string>
     <string name="return_date">Возврат %1$s</string>
 </resources>

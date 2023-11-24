@@ -28,6 +28,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -36,6 +37,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.foresko.gamenever.R
 import com.foresko.gamenever.core.rest.Card
 import com.foresko.gamenever.core.rest.GameModel
+import com.foresko.gamenever.core.utils.triggerVibration
 import com.foresko.gamenever.ui.theme.INeverTheme
 import com.foresko.gamenever.ui.utils.linearGradient
 import kotlinx.coroutines.delay
@@ -49,6 +51,8 @@ fun MainCard(
     showAds: () -> Unit,
 ) {
     val isFreeTopic = card.freeTopic || isPremiumActive
+
+    val context = LocalContext.current
 
     Box(
         contentAlignment = Alignment.Center,
@@ -66,6 +70,7 @@ fun MainCard(
             .background(Color(android.graphics.Color.parseColor(card.color)))
 
             .clickable(onClick = {
+                triggerVibration(context)
                 if (isFreeTopic) {
                     cardState.isSelected.value = !cardState.isSelected.value
                     cardState.cardData.value = card

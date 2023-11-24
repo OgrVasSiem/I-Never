@@ -50,7 +50,7 @@ class PremiumViewModel @Inject constructor(
     var onboardingState by mutableStateOf<OnboardingState?>(null)
         private set
 
-    var tariffType by mutableStateOf(TariffType.ThreeMonth)
+    var tariffType by mutableStateOf(TariffType.Year)
         private set
 
     var inAppSubscriptions by mutableStateOf<List<InAppSubscription>>(emptyList())

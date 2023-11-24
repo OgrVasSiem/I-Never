@@ -30,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -37,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.foresko.gamenever.R
 import com.foresko.gamenever.core.utils.LocalActivity
+import com.foresko.gamenever.core.utils.triggerVibration
 import com.foresko.gamenever.ui.RootNavGraph
 import com.foresko.gamenever.ui.RootNavigator
 import com.foresko.gamenever.ui.destination.game.GameScreenNavArgs
@@ -86,6 +88,7 @@ fun MainScreenContent(
     navigateToGameScreen: (ids: List<Long>, fromAd: Boolean) -> Unit,
     viewModel: MainViewModel,
 ) {
+    val context = LocalContext.current
     val cards by viewModel.card.collectAsState()
 
     val cardStates by viewModel.cardStates.collectAsState()
@@ -176,6 +179,7 @@ fun MainScreenContent(
                                 interactionSource = MutableInteractionSource(),
                                 indication = rememberRipple(bounded = false),
                             ) {
+                                triggerVibration(context)
                                 navigateToGameScreen(activeCards.map { it.id }, false)
                             },
                         contentAlignment = Alignment.Center
@@ -215,6 +219,8 @@ private fun TopAppBar(
     navigateToSettingsScreen: () -> Unit,
     navigateToRulesScreen: () -> Unit
 ) {
+    val context = LocalContext.current
+
     CenterAlignedTopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White),
         title = {
@@ -234,7 +240,10 @@ private fun TopAppBar(
                     .clickable(
                         interactionSource = MutableInteractionSource(),
                         indication = rememberRipple(bounded = false),
-                        onClick = navigateToSettingsScreen
+                        onClick = {
+                            triggerVibration(context)
+                            navigateToSettingsScreen()
+                        }
                     ),
                 tint = Color.Unspecified
             )
@@ -248,7 +257,9 @@ private fun TopAppBar(
                     .clickable(
                         interactionSource = MutableInteractionSource(),
                         indication = rememberRipple(bounded = false),
-                        onClick = navigateToRulesScreen
+                        onClick = {
+                            triggerVibration(context)
+                            navigateToRulesScreen() }
                     ),
                 tint = Color.Unspecified
             )

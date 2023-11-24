@@ -31,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -56,6 +57,7 @@ import com.foresko.gamenever.ui.theme.INeverTheme
 import com.ramcosta.composedestinations.annotation.Destination
 import kotlinx.coroutines.delay
 import com.amplitude.api.Amplitude
+import com.foresko.gamenever.core.utils.triggerVibration
 import org.json.JSONObject
 
 @Composable
@@ -126,8 +128,6 @@ private fun PremiumOnboardingScreen(
     navigateToAuthorizationSBPBottomSheet: () -> Unit,
     navigateToPendingStatusPurchaseScreen: () -> Unit
 ) {
-    val smallScreen = LocalConfiguration.current.screenHeightDp.dp < 650.dp
-
     Scaffold(
         topBar = { TopAppBar(navigateToChooseGameSign = navigateToChooseGameSign) }
     ) { paddingValues ->
@@ -175,10 +175,15 @@ private fun PremiumOnboardingScreen(
 private fun TopAppBar(
     navigateToChooseGameSign: () -> Unit
 ) {
+    val context = LocalContext.current
+
     TopAppBar(
         startItem = { modifier ->
             IconButton(
-                onClick = navigateToChooseGameSign,
+                onClick = {
+                    navigateToChooseGameSign()
+                    triggerVibration(context)
+                },
                 modifier = modifier
             ) {
                 Icon(
@@ -196,6 +201,8 @@ private fun Info(
     navigateToTermOfUse: () -> Unit,
     navigateToPrivacyPolicy: () -> Unit
 ) {
+    val context = LocalContext.current
+
     val smallScreen = LocalConfiguration.current.screenHeightDp.dp < 650.dp
 
     if (!smallScreen) {
@@ -205,12 +212,16 @@ private fun Info(
         ) {
             InfoItem(
                 text = R.string.privacy_policy_on,
-                onClick = navigateToPrivacyPolicy
+                onClick = {
+                    triggerVibration(context)
+                    navigateToPrivacyPolicy() }
             )
 
             InfoItem(
                 text = R.string.term_of_use_on,
-                onClick = navigateToTermOfUse
+                onClick = {
+                    triggerVibration(context)
+                    navigateToTermOfUse() }
             )
         }
     } else
@@ -220,12 +231,16 @@ private fun Info(
         ) {
             InfoItemSmallScreen(
                 text = R.string.privacy_policy_on,
-                onClick = navigateToPrivacyPolicy
+                onClick = {
+                    triggerVibration(context)
+                    navigateToPrivacyPolicy() }
             )
 
             InfoItemSmallScreen(
                 text = R.string.term_of_use_on,
-                onClick = navigateToTermOfUse
+                onClick = {
+                    triggerVibration(context)
+                    navigateToTermOfUse() }
             )
         }
 }

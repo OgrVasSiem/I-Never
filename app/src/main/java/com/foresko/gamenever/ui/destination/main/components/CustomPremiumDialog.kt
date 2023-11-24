@@ -77,7 +77,6 @@ fun PremDialog(
     showAds: () -> Unit,
     name: String,
 ) {
-    val context = LocalContext.current
     val fullText = stringResource(id = R.string.get_free, name)
     val boldPart = name
     val annotatedString = buildAnnotatedString {

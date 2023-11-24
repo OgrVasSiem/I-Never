@@ -44,6 +44,7 @@ import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.amplitude.api.Amplitude
 import com.foresko.gamenever.R
+import com.foresko.gamenever.core.utils.triggerVibration
 import com.foresko.gamenever.ui.RootNavGraph
 import com.foresko.gamenever.ui.RootNavigator
 import com.foresko.gamenever.ui.destinations.destinations.PrivacyPolicyScreenDestination
@@ -153,7 +154,8 @@ private fun PremiumScreen(
 
                     Spacer(modifier = Modifier.height(14.dp))
 
-                    Amplitude.getInstance().logEvent("subscription_button", JSONObject().put("path", "premium_screen"))
+                    Amplitude.getInstance()
+                        .logEvent("subscription_button", JSONObject().put("path", "premium_screen"))
 
                     SubscriptionButtons(
                         navigateToPendingStatusPurchaseScreen = navigateToPendingStatusPurchaseScreen,
@@ -189,8 +191,13 @@ private fun CloseButton(
     popBackStack: () -> Unit,
     modifier: Modifier
 ) {
+    val context = LocalContext.current
+
     IconButton(
-        onClick = popBackStack,
+        onClick = {
+            popBackStack()
+            triggerVibration(context)
+        },
         modifier = modifier
             .zIndex(1f)
             .statusBarsPadding()
@@ -320,7 +327,6 @@ fun Contacts() {
         }
     }
 }
-
 
 
 @Composable

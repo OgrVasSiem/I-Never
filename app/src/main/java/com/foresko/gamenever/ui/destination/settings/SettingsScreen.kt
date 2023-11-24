@@ -52,8 +52,8 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.amplitude.api.Amplitude
 import com.foresko.gamenever.R
-import com.foresko.gamenever.core.utils.emptyString
 import com.foresko.gamenever.core.utils.storeUrl
+import com.foresko.gamenever.core.utils.triggerVibration
 import com.foresko.gamenever.dataStore.Session
 import com.foresko.gamenever.ui.RootNavGraph
 import com.foresko.gamenever.ui.RootNavigator
@@ -61,7 +61,6 @@ import com.foresko.gamenever.ui.destinations.destinations.AuthorizationBottomShe
 import com.foresko.gamenever.ui.destinations.destinations.PremiumScreenDestination
 import com.foresko.gamenever.ui.launchSingleTopNavigate
 import com.foresko.gamenever.ui.theme.INeverTheme
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.ramcosta.composedestinations.annotation.Destination
 import org.json.JSONObject
@@ -151,6 +150,7 @@ private fun SettingsScreen(
                     functionName = R.string.acc,
                     icon = (R.drawable.ic_authorization),
                     onClick = {
+                        triggerVibration(context)
                         Amplitude.getInstance().logEvent("account")
                         navigateToAuthorizationBottomSheet()
                     },
@@ -161,6 +161,7 @@ private fun SettingsScreen(
                     text = R.string.write_in_support,
                     image = (R.drawable.ic_support),
                     onClick = {
+                        triggerVibration(context)
                         Amplitude.getInstance().logEvent("support")
                         context.startActivity(intentTelegram)
                     }
@@ -170,6 +171,7 @@ private fun SettingsScreen(
                     text = R.string.estimate_application,
                     image = (R.drawable.ic_star),
                     onClick = {
+                        triggerVibration(context)
                         Amplitude.getInstance().logEvent("rate_app")
                         context.startActivity(intentGooglePlay)
                     }
@@ -179,6 +181,7 @@ private fun SettingsScreen(
                     text = R.string.share_application,
                     image = (R.drawable.ic_share),
                     onClick = {
+                        triggerVibration(context)
                         Amplitude.getInstance().logEvent("share_app")
                         context.startActivity(intentShareApp)
                     }
@@ -208,6 +211,8 @@ private fun SettingsScreen(
 private fun TopAppBar(
     popBackStack: () -> Unit
 ) {
+    val context = LocalContext.current
+
     CenterAlignedTopAppBar(
         colors = topAppBarColors(containerColor = Color.White),
         title = {
@@ -228,6 +233,7 @@ private fun TopAppBar(
                         interactionSource = MutableInteractionSource(),
                         indication = rememberRipple(bounded = false),
                         onClick = {
+                            triggerVibration(context)
                             Amplitude
                                 .getInstance()
                                 .logEvent("settings_back_button")
@@ -244,6 +250,8 @@ private fun TopAppBar(
 private fun PremiumButton(
     navigateToPremiumScreen: () -> Unit
 ) {
+    val context = LocalContext.current
+
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
@@ -268,6 +276,7 @@ private fun PremiumButton(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = rememberRipple(bounded = true)
             ) {
+                triggerVibration(context)
                 Amplitude
                     .getInstance()
                     .logEvent("premium_button")
@@ -340,6 +349,7 @@ private fun PremiumButton(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = rememberRipple(bounded = true)
                     ) {
+                        triggerVibration(context)
                         Amplitude
                             .getInstance()
                             .logEvent("premium_button")
@@ -538,6 +548,7 @@ private fun InfoAboutDevelopersCompany(
                     interactionSource = remember { MutableInteractionSource() },
                     indication = null
                 ) {
+                    triggerVibration(context)
                     Amplitude
                         .getInstance()
                         .logEvent("foresko")

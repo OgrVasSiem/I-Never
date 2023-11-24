@@ -30,12 +30,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.amplitude.api.Amplitude
 import com.foresko.gamenever.R
+import com.foresko.gamenever.core.utils.triggerVibration
 import com.foresko.gamenever.ui.RootNavGraph
 import com.foresko.gamenever.ui.RootNavigator
 import com.foresko.gamenever.ui.theme.INeverTheme
@@ -73,6 +76,8 @@ fun RulesScreen(
 fun RulesScreenContent(
     popBackStack: () -> Unit,
 ) {
+    val smallScreen = LocalConfiguration.current.screenHeightDp.dp < 650.dp
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -97,28 +102,32 @@ fun RulesScreenContent(
                     text = stringResource(id = R.string.rules_text1)
                 )
 
-                Spacer(modifier = Modifier.height(45.dp))
+                if (!smallScreen) { Spacer(modifier = Modifier.height(45.dp)) }
+                else Spacer(modifier = Modifier.height(20.dp))
 
                 RuleItem(
                     icon = painterResource(R.drawable.ic_two),
                     text = stringResource(id = R.string.rules_text2)
                 )
 
-                Spacer(modifier = Modifier.height(45.dp))
+                if (!smallScreen) { Spacer(modifier = Modifier.height(45.dp)) }
+                else Spacer(modifier = Modifier.height(20.dp))
 
                 RuleItem(
                     icon = painterResource(R.drawable.ic_three),
                     text = stringResource(id = R.string.rules_text3)
                 )
 
-                Spacer(modifier = Modifier.height(45.dp))
+                if (!smallScreen) { Spacer(modifier = Modifier.height(45.dp)) }
+                else Spacer(modifier = Modifier.height(20.dp))
 
                 RuleItem(
                     icon = painterResource(R.drawable.ic_four),
                     text = stringResource(id = R.string.rules_text4)
                 )
 
-                Spacer(modifier = Modifier.height(45.dp))
+                if (!smallScreen) { Spacer(modifier = Modifier.height(45.dp)) }
+                else Spacer(modifier = Modifier.height(20.dp))
 
                 RuleItem(
                     icon = painterResource(R.drawable.ic_five),
@@ -158,6 +167,8 @@ fun RuleItem(
 private fun TopAppBar(
     popBackStack: () -> Unit
 ) {
+    val context = LocalContext.current
+
     CenterAlignedTopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White),
         title = {
@@ -178,6 +189,7 @@ private fun TopAppBar(
                         interactionSource = MutableInteractionSource(),
                         indication = rememberRipple(bounded = false),
                         onClick = {
+                            triggerVibration(context)
                             Amplitude
                                 .getInstance()
                                 .logEvent("rules_close_button")

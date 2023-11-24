@@ -17,7 +17,7 @@ import java.lang.Math.abs
 import kotlin.math.roundToInt
 import kotlin.math.sign
 
-@OptIn(ExperimentalMaterialApi::class, ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalMaterialApi::class)
 fun Modifier.draggableStack(
     controller: CardStackController,
     thresholdConfig: (Float, Float) -> ThresholdConfig,
@@ -66,7 +66,7 @@ fun Modifier.draggableStack(
                             controller.right.x,
                             abs(controller.offsetX.value),
                             0f,
-                            10f
+                            5f
                         )
 
                         controller.rotation.snapTo(targetRotation * -controller.offsetX.value.sign)

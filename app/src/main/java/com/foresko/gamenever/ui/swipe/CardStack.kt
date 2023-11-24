@@ -21,10 +21,12 @@ import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.foresko.gamenever.core.rest.GameModel
+import com.foresko.gamenever.core.utils.triggerVibration
 import com.foresko.gamenever.ui.destination.game.GameViewModel
 import com.foresko.gamenever.ui.destination.game.ProfileCard
 
@@ -41,11 +43,15 @@ fun CardStack(
 ) {
     val cardStackController = rememberCardStackController()
 
+    val context = LocalContext.current
+
     cardStackController.onSwipeLeft = {
+        triggerVibration(context)
         onCardSwiped()
     }
 
     cardStackController.onSwipeRight = {
+        triggerVibration(context)
         onCardSwiped()
     }
 

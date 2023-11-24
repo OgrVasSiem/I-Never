@@ -29,6 +29,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -40,6 +41,7 @@ import com.foresko.gamenever.R
 import com.foresko.gamenever.core.rest.Card
 import com.foresko.gamenever.core.rest.GameModel
 import com.foresko.gamenever.core.utils.LocalActivity
+import com.foresko.gamenever.core.utils.triggerVibration
 import com.foresko.gamenever.ui.RootNavGraph
 import com.foresko.gamenever.ui.RootNavigator
 import com.foresko.gamenever.ui.destinations.destinations.PremiumScreenDestination
@@ -57,12 +59,12 @@ import org.json.JSONObject
 fun GameScreen(
     viewModel: GameViewModel = hiltViewModel(),
     rootNavigator: RootNavigator,
-    ) {
+) {
     GameScreenContent(
         rootNavigator = rootNavigator,
         viewModel = viewModel,
 
-    )
+        )
 }
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -98,7 +100,7 @@ fun GameScreenContent(
 
     Box(modifier = Modifier.fillMaxSize()) {
         Scaffold(
-            modifier = Modifier,
+            modifier = Modifier.background(INeverTheme.colors.white),
             topBar = {
                 TopAppBar(
                     currentQuestionNumber = viewModel.currentQuestionNumber.intValue,
@@ -184,6 +186,8 @@ fun TopAppBar(
     navigateToPremiumScreen: () -> Unit,
     popBackStack: () -> Unit,
 ) {
+    val context = LocalContext.current
+
     CenterAlignedTopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White),
         title = {
@@ -213,6 +217,7 @@ fun TopAppBar(
                                 .getInstance()
                                 .logEvent("game_back_button")
                             popBackStack()
+                            triggerVibration(context)
                         }
                     ),
                 tint = Color.Unspecified
@@ -228,11 +233,18 @@ fun TopAppBar(
                         interactionSource = MutableInteractionSource(),
                         indication = rememberRipple(bounded = false),
                         onClick = {
-                            Amplitude.getInstance().logEvent("game_premium_button")
+                            Amplitude
+                                .getInstance()
+                                .logEvent("game_premium_button")
 
-                            Amplitude.getInstance().logEvent("premium_screen", JSONObject().put("path", "game_screen"))
+                            Amplitude
+                                .getInstance()
+                                .logEvent("premium_screen", JSONObject().put("path", "game_screen"))
 
-                            navigateToPremiumScreen() }
+                            navigateToPremiumScreen()
+
+                            triggerVibration(context)
+                        }
                     ),
                 tint = Color.Unspecified
             )

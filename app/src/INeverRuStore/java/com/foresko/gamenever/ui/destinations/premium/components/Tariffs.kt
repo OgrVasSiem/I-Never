@@ -119,21 +119,21 @@ fun Tariffs(
     )
 
     val animatedScaleXThreeMonth by animateFloatAsState(
-        if (tariffType != TariffType.ThreeMonth) 0.8f else 1f,
+        if (tariffType != TariffType.Year) 0.8f else 1f,
         label = ""
     )
     val animatedThreeMonthHeight by animateDpAsState(
-        if (tariffType != TariffType.ThreeMonth) 142.dp else 156.dp,
+        if (tariffType != TariffType.Year) 142.dp else 156.dp,
         label = ""
     )
 
     val animatedScaleXYear by animateFloatAsState(
-        if (tariffType != TariffType.Year) 0.8f else 1f,
+        if (tariffType != TariffType.ThreeMonth) 0.8f else 1f,
         label = ""
     )
 
     val animatedPercentHorizontalPadding by animateDpAsState(
-        if (tariffType == TariffType.ThreeMonth) 14.dp else 4.dp,
+        if (tariffType == TariffType.Year) 14.dp else 4.dp,
         label = ""
     )
 
@@ -142,7 +142,7 @@ fun Tariffs(
     val accentColor = SolidColor(INeverTheme.colors.accent)
 
     val percentColor = remember(tariffType) {
-        if (tariffType == TariffType.ThreeMonth) accent2Gradient else accentColor
+        if (tariffType == TariffType.Year) accent2Gradient else accentColor
     }
     var readyToDraw by remember { mutableStateOf(false) }
 
@@ -228,35 +228,34 @@ fun Tariffs(
                     }
                 }
 
-
                 DefaultTariffBox(
+                    isActive = tariffType == TariffType.Year,
+                    changeTariffType = {
+                        Amplitude.getInstance().logEvent("onboarding_welcome_screen", JSONObject().put("type", "year"))
+                        changeTariffType(TariffType.Year) },
+                    typeName = stringResource(R.string.year).lowercase(),
+                    premiumPrice = yearSubscribePrice,
+                    monthPremiumPrice = monthPriceInYearlySubscribe,
+                    currencyCode = currencyCode,
                     modifier = Modifier
                         .align(Alignment.Center),
-                    isActive = tariffType == TariffType.ThreeMonth,
-                    changeTariffType = {
-                        Amplitude.getInstance().logEvent("onboarding_welcome_screen", JSONObject().put("type", "threeMonth"))
-                        changeTariffType(TariffType.ThreeMonth) },
-                    typeName = 3.formatAsMonthWordEnding().lowercase(),
-                    premiumPrice = threeMonthSubscribePrice,
-                    currencyCode = currencyCode,
-                    monthPremiumPrice = monthPriceInThreeMonthSubscribe,
-                    typeTextCount = 3
+                    typeTextCount = 1
                 )
             }
 
             Spacer(modifier = Modifier.width(6.dp))
 
             DefaultTariffBox(
-                isActive = tariffType == TariffType.Year,
-                changeTariffType = {
-                    Amplitude.getInstance().logEvent("onboarding_welcome_screen", JSONObject().put("type", "year"))
-                    changeTariffType(TariffType.Year) },
-                typeName = stringResource(R.string.year).lowercase(),
-                premiumPrice = yearSubscribePrice,
-                monthPremiumPrice = monthPriceInYearlySubscribe,
-                currencyCode = currencyCode,
                 modifier = Modifier.weight(animatedScaleXYear),
-                typeTextCount = 1
+                isActive = tariffType == TariffType.ThreeMonth,
+                changeTariffType = {
+                    Amplitude.getInstance().logEvent("onboarding_welcome_screen", JSONObject().put("type", "threeMonth"))
+                    changeTariffType(TariffType.ThreeMonth) },
+                typeName = 3.formatAsMonthWordEnding().lowercase(),
+                premiumPrice = threeMonthSubscribePrice,
+                currencyCode = currencyCode,
+                monthPremiumPrice = monthPriceInThreeMonthSubscribe,
+                typeTextCount = 3
             )
         }
 

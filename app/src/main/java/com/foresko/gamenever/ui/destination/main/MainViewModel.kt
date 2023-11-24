@@ -144,5 +144,4 @@ class MainViewModel @Inject constructor(
             onAdClosed()
         }
     }
-
 }

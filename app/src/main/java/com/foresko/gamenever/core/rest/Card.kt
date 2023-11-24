@@ -45,7 +45,6 @@ data class Question(
     val text: String,
 )
 
-
 fun NetworkCard.toCard(): Card {
     return Card(
         name = this.name,
