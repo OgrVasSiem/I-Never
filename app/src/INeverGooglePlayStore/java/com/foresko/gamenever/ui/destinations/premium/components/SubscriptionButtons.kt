@@ -28,14 +28,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.amplitude.api.Amplitude
 import com.android.billingclient.api.ProductDetails
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.foresko.gamenever.R
 import com.foresko.gamenever.ui.destination.premium.TariffType
 import com.foresko.gamenever.core.utils.LocalActivity
+import com.foresko.gamenever.dataStore.Session
 import com.foresko.gamenever.ui.theme.INeverTheme
 import com.foresko.gamenever.ui.utils.horizontalGradient
+import org.json.JSONObject
 import java.lang.ref.WeakReference
 import java.util.Locale
 
@@ -45,7 +48,7 @@ fun SubscriptionButtons(
     subscribeForSale: ProductDetails?,
     subscribe: (productDetails: ProductDetails, WeakReference<Activity>, tag: String) -> Unit,
     navigateToAuthorizationSBPBottomSheet: () -> Unit,
-    account: GoogleSignInAccount?,
+    session: Session?,
     navigateToPendingStatusPurchaseScreen: () -> Unit
 ) {
     val activity = LocalActivity.current
@@ -80,7 +83,7 @@ fun SubscriptionButtons(
             SBPSubscription(
                 navigateToAuthorizationSBPBottomSheet = navigateToAuthorizationSBPBottomSheet,
                 navigateToPendingStatusPurchaseScreen = navigateToPendingStatusPurchaseScreen,
-                account = account
+                session = session
             )
         }
     }
@@ -116,6 +119,11 @@ private fun GooglePlaySubscription(
                 indication = rememberRipple(bounded = true)
             ) {
                 subscribe()
+
+                Amplitude.getInstance().logEvent(
+                    "subscription_button",
+                    JSONObject().put("path", "onboarding_welcome_screen")
+                )
             }
     ) {
         Text(
@@ -129,7 +137,7 @@ private fun GooglePlaySubscription(
 @Composable
 private fun SBPSubscription(
     navigateToAuthorizationSBPBottomSheet: () -> Unit,
-    account: GoogleSignInAccount?,
+    session: Session?,
     navigateToPendingStatusPurchaseScreen: () -> Unit,
 ) {
     Box(
@@ -144,7 +152,7 @@ private fun SBPSubscription(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = rememberRipple(bounded = true)
             ) {
-                if (account == null) {
+                if (session == null) {
                     navigateToAuthorizationSBPBottomSheet()
                 } else {
                     navigateToPendingStatusPurchaseScreen()

@@ -1,7 +1,5 @@
 package com.foresko.gamenever.ui.destinations.premium.premiumOnboarding
 
-import android.content.Intent
-import android.net.Uri
 import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -32,14 +30,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.amplitude.api.Amplitude
 import com.foresko.gamenever.R
+import com.foresko.gamenever.core.utils.triggerVibration
 import com.foresko.gamenever.ui.RootNavGraph
 import com.foresko.gamenever.ui.RootNavigator
 import com.foresko.gamenever.ui.components.TopAppBar
@@ -54,7 +56,6 @@ import com.foresko.gamenever.ui.destinations.premium.PremiumViewModel
 import com.foresko.gamenever.ui.destinations.premium.components.SubscriptionButtons
 import com.foresko.gamenever.ui.destinations.premium.components.Tariffs
 import com.foresko.gamenever.ui.theme.INeverTheme
-import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.ramcosta.composedestinations.annotation.Destination
 import kotlinx.coroutines.delay
 
@@ -65,11 +66,20 @@ fun PremiumOnboardingScreen(
     viewModel: PremiumViewModel = hiltViewModel(),
     rootNavigator: RootNavigator
 ) {
+    var amplitudeInit by remember { mutableStateOf(true) }
+
+    LaunchedEffect(key1 = amplitudeInit) {
+        if (amplitudeInit) {
+            Amplitude.getInstance().logEvent("paywall_welcome_screen")
+
+            amplitudeInit = false
+        }
+    }
 
     var initializeScreen by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(key1 = viewModel.premiumIsActive, key2 = viewModel.onboardingState) {
-        if (viewModel.premiumIsActive == true || viewModel.onboardingState?.premium == false) {
+        if (viewModel.premiumIsActive || viewModel.onboardingState?.premium == false) {
             rootNavigator.navigate(MainScreenDestination()) {
                 popUpTo(route = OnboardingScreenDestination.route) { inclusive = true }
             }
@@ -77,14 +87,14 @@ fun PremiumOnboardingScreen(
 
         delay(300)
 
-        if (viewModel.premiumIsActive != null && viewModel.onboardingState != null) initializeScreen =
+        if (viewModel.onboardingState != null) initializeScreen =
             true
     }
 
     if (initializeScreen) {
         PremiumOnboardingScreen(
             viewModel = viewModel,
-            navigateToChooseZodiacSign = {
+            navigateToChooseGameSign = {
                 rootNavigator.navigate(
                     MainScreenDestination()
                 )
@@ -111,7 +121,7 @@ fun PremiumOnboardingScreen(
 @Composable
 private fun PremiumOnboardingScreen(
     viewModel: PremiumViewModel,
-    navigateToChooseZodiacSign: () -> Unit,
+    navigateToChooseGameSign: () -> Unit,
     navigateToTermOfUse: () -> Unit,
     navigateToPrivacyPolicy: () -> Unit,
     navigateToAuthorizationSBPBottomSheet: () -> Unit,
@@ -125,18 +135,13 @@ private fun PremiumOnboardingScreen(
             .background(INeverTheme.colors.white),
     ) {
         Scaffold(
-            backgroundColor = Color.Transparent,
-            modifier = Modifier
-                .background(Color.Transparent)
-                .navigationBarsPadding()
-                .statusBarsPadding(),
-            topBar = { TopAppBar(navigateToChooseZodiacSign = navigateToChooseZodiacSign) }
+            topBar = { TopAppBar(navigateToChooseGameSign = navigateToChooseGameSign) }
         ) { paddingValues ->
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
                     .padding(paddingValues)
-                    .offset(y = (-20).dp)
+                    .offset(y = (-45).dp)
             ) {
                 PremiumInfo()
 
@@ -148,7 +153,7 @@ private fun PremiumOnboardingScreen(
                     subscribeForSale = productDetails
                 )
 
-                Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(15.dp))
 
                 SubscriptionButtons(
                     tariffType = viewModel.tariffType,
@@ -156,10 +161,10 @@ private fun PremiumOnboardingScreen(
                     subscribeForSale = productDetails,
                     navigateToPendingStatusPurchaseScreen = navigateToPendingStatusPurchaseScreen,
                     navigateToAuthorizationSBPBottomSheet = navigateToAuthorizationSBPBottomSheet,
-                    account = viewModel.account
+                    session = viewModel.session
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.weight(1f))
 
                 Info(
                     navigateToTermOfUse = navigateToTermOfUse,
@@ -172,12 +177,17 @@ private fun PremiumOnboardingScreen(
 
 @Composable
 private fun TopAppBar(
-    navigateToChooseZodiacSign: () -> Unit
+    navigateToChooseGameSign: () -> Unit
 ) {
+    val context = LocalContext.current
+
     TopAppBar(
         startItem = { modifier ->
             IconButton(
-                onClick = navigateToChooseZodiacSign,
+                onClick = {
+                    navigateToChooseGameSign()
+                    triggerVibration(context)
+                },
                 modifier = modifier
             ) {
                 Icon(
@@ -197,38 +207,46 @@ private fun Info(
 ) {
     val context = LocalContext.current
 
-    val intent = remember {
-        Intent(
-            Intent.ACTION_VIEW,
-            Uri.parse("https://play.google.com/store/account/subscriptions?hl=ru&gl=US")
-        )
-    }
+    val smallScreen = LocalConfiguration.current.screenHeightDp.dp < 650.dp
 
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(26.dp)
-    ) {
-        InfoItem(
-            text = R.string.privacy_policy_eng,
-            onClick = navigateToPrivacyPolicy
-        )
+    if (!smallScreen) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(26.dp)
+        ) {
+            InfoItem(
+                text = R.string.privacy_policy_on,
+                onClick = {
+                    triggerVibration(context)
+                    navigateToPrivacyPolicy() }
+            )
 
-        InfoItem(
-            text = R.string.term_of_use_eng,
-            onClick = navigateToTermOfUse
-        )
+            InfoItem(
+                text = R.string.term_of_use_on,
+                onClick = {
+                    triggerVibration(context)
+                    navigateToTermOfUse() }
+            )
+        }
+    } else
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(26.dp)
+        ) {
+            InfoItemSmallScreen(
+                text = R.string.privacy_policy_on,
+                onClick = {
+                    triggerVibration(context)
+                    navigateToPrivacyPolicy() }
+            )
 
-        InfoItem(
-            text = R.string.restore,
-            onClick = {
-                try {
-                    context.startActivity(intent)
-                } catch (ex: Exception) {
-                    FirebaseCrashlytics.getInstance().recordException(ex)
-                }
-            }
-        )
-    }
+            InfoItemSmallScreen(
+                text = R.string.term_of_use_on,
+                onClick = {
+                    triggerVibration(context)
+                    navigateToTermOfUse() }
+            )
+        }
 }
 
 @Composable
@@ -242,6 +260,29 @@ private fun InfoItem(
         fontSize = 12.sp,
         lineHeight = 14.sp,
         fontWeight = FontWeight(400),
+        textAlign = TextAlign.Center,
+        modifier = Modifier
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null
+            ) {
+                onClick()
+            }
+    )
+}
+
+@Composable
+private fun InfoItemSmallScreen(
+    @StringRes text: Int,
+    onClick: () -> Unit
+) {
+    Text(
+        text = stringResource(text),
+        color = INeverTheme.colors.primary.copy(alpha = 0.50f),
+        fontSize = 8.sp,
+        lineHeight = 8.sp,
+        fontWeight = FontWeight(300),
+        textAlign = TextAlign.Center,
         modifier = Modifier
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },

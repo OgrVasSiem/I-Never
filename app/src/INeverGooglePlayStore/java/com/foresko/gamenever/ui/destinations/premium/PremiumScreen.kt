@@ -142,7 +142,7 @@ private fun PremiumScreen(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                if (viewModel.premiumIsActive == false) {
+                if (!viewModel.premiumIsActive) {
                     Tariffs(
                         tariffType = viewModel.tariffType,
                         changeTariffType = viewModel::changeTariffType,
@@ -157,7 +157,7 @@ private fun PremiumScreen(
                         subscribeForSale = productDetails,
                         navigateToPendingStatusPurchaseScreen = navigateToPendingStatusPurchaseScreen,
                         navigateToAuthorizationSBPBottomSheet = navigateToAuthorizationSBPBottomSheet,
-                        account = viewModel.account
+                        session = viewModel.session
                     )
                 } else {
                     InfoAboutPremium()

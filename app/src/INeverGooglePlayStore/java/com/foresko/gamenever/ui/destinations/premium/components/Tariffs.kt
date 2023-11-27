@@ -53,7 +53,7 @@ import androidx.core.text.getSpans
 import com.android.billingclient.api.ProductDetails
 import com.foresko.gamenever.R
 import com.foresko.gamenever.ui.destination.premium.TariffType
-import com.foresko.gamenever.core.premium.getSubscriptionInfo
+import com.foresko.gamenever.ui.destinations.premium.SubscriptionInfo
 import com.foresko.gamenever.ui.theme.INeverTheme
 import com.foresko.gamenever.ui.utils.formaters.formatAsMonthWordEnding
 import com.foresko.gamenever.ui.utils.formaters.moneyCurrencyFormatter
@@ -71,7 +71,7 @@ fun Tariffs(
     subscribeForSale: ProductDetails?,
     isPremiumScreen: Boolean = false
 ) {
-    var monthSubscribePrice by remember { mutableStateOf(BigDecimal.ZERO)) }
+    var monthSubscribePrice by remember { mutableStateOf(BigDecimal.ZERO) }
 
     var yearSubscribePrice by remember { mutableStateOf(BigDecimal(0)) }
     var monthPriceInYearlySubscribe by remember { mutableStateOf(BigDecimal(0)) }
@@ -88,18 +88,18 @@ fun Tariffs(
     LaunchedEffect(key1 = subscribeForSale) {
         try {
             val defaultSubscriptionInfo =
-                getSubscriptionInfo(subscribeForSale, TariffType.Month.googlePurchaseName)
+                SubscriptionInfo.from(subscribeForSale, TariffType.Year.googlePurchaseName)
 
-            monthSubscribePrice = defaultSubscriptionInfo.price
+            monthSubscribePrice =
+                SubscriptionInfo.from(subscribeForSale, TariffType.Month.googlePurchaseName).price
 
-            yearSubscribePrice =
-                getSubscriptionInfo(subscribeForSale, TariffType.Year.googlePurchaseName).price
+            yearSubscribePrice = defaultSubscriptionInfo.price
 
             monthPriceInYearlySubscribe =
                 (yearSubscribePrice.divide(BigDecimal(12), 2, RoundingMode.HALF_DOWN))
 
             threeMonthSubscribePrice =
-                getSubscriptionInfo(
+                SubscriptionInfo.from(
                     subscribeForSale,
                     TariffType.ThreeMonth.googlePurchaseName
                 ).price
@@ -108,7 +108,7 @@ fun Tariffs(
                 (threeMonthSubscribePrice.divide(BigDecimal(3), 2, RoundingMode.HALF_DOWN))
 
             if (monthSubscribePrice != BigDecimal.ZERO) {
-                percent = BigDecimal(100) - (monthPriceInThreeMonthlySubscribe * BigDecimal(100))
+                percent = BigDecimal(100) - (monthPriceInYearlySubscribe * BigDecimal(100))
                     .divide(monthSubscribePrice, 0, RoundingMode.HALF_DOWN)
             }
 
@@ -119,27 +119,28 @@ fun Tariffs(
         }
     }
 
+
     val animatedScaleXMonth by animateFloatAsState(
         if (tariffType != TariffType.Month) 0.8f else 1f,
         label = ""
     )
 
     val animatedScaleXThreeMonth by animateFloatAsState(
-        if (tariffType != TariffType.ThreeMonth) 0.8f else 1f,
+        if (tariffType != TariffType.Year) 0.8f else 1f,
         label = ""
     )
     val animatedThreeMonthHeight by animateDpAsState(
-        if (tariffType != TariffType.ThreeMonth) 142.dp else 156.dp,
+        if (tariffType != TariffType.Year) 142.dp else 156.dp,
         label = ""
     )
 
     val animatedScaleXYear by animateFloatAsState(
-        if (tariffType != TariffType.Year) 0.8f else 1f,
+        if (tariffType != TariffType.ThreeMonth) 0.8f else 1f,
         label = ""
     )
 
     val animatedPercentHorizontalPadding by animateDpAsState(
-        if (tariffType == TariffType.ThreeMonth) 14.dp else 4.dp,
+        if (tariffType == TariffType.Year) 14.dp else 4.dp,
         label = ""
     )
 
@@ -232,29 +233,29 @@ fun Tariffs(
 
 
                 DefaultTariffBox(
+                    isActive = tariffType == TariffType.Year,
+                    changeTariffType = { changeTariffType(TariffType.Year) },
+                    typeName = stringResource(R.string.year).lowercase(),
+                    premiumPrice = yearSubscribePrice,
+                    monthPremiumPrice = monthPriceInYearlySubscribe,
+                    currencyCode = currencyCode,
                     modifier = Modifier
                         .align(Alignment.Center),
-                    isActive = tariffType == TariffType.ThreeMonth,
-                    changeTariffType = { changeTariffType(TariffType.ThreeMonth) },
-                    typeName = 3.formatAsMonthWordEnding().lowercase(),
-                    premiumPrice = threeMonthSubscribePrice,
-                    currencyCode = currencyCode,
-                    monthPremiumPrice = monthPriceInThreeMonthlySubscribe,
-                    typeTextCount = 3
+                    typeTextCount = 1
                 )
             }
 
             Spacer(modifier = Modifier.width(6.dp))
 
             DefaultTariffBox(
-                isActive = tariffType == TariffType.Year,
-                changeTariffType = { changeTariffType(TariffType.Year) },
-                typeName = stringResource(R.string.year).lowercase(),
-                premiumPrice = yearSubscribePrice,
-                monthPremiumPrice = monthPriceInYearlySubscribe,
-                currencyCode = currencyCode,
                 modifier = Modifier.weight(animatedScaleXYear),
-                typeTextCount = 1
+                isActive = tariffType == TariffType.ThreeMonth,
+                changeTariffType = { changeTariffType(TariffType.ThreeMonth) },
+                typeName = 3.formatAsMonthWordEnding().lowercase(),
+                premiumPrice = threeMonthSubscribePrice,
+                currencyCode = currencyCode,
+                monthPremiumPrice = monthPriceInThreeMonthlySubscribe,
+                typeTextCount = 3
             )
         }
 
@@ -467,7 +468,6 @@ private fun DescriptionText(
         modifier = Modifier
             .padding(horizontal = 16.dp)
             .fillMaxWidth()
-            .defaultMinSize(minHeight = 60.dp)
     ) {
         if (currencyCode.isNotEmpty()) {
             Text(

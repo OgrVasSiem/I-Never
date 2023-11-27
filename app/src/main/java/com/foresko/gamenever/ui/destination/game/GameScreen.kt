@@ -38,7 +38,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.amplitude.api.Amplitude
 import com.foresko.gamenever.R
-import com.foresko.gamenever.core.rest.Card
 import com.foresko.gamenever.core.rest.GameModel
 import com.foresko.gamenever.core.utils.LocalActivity
 import com.foresko.gamenever.core.utils.triggerVibration
@@ -47,7 +46,6 @@ import com.foresko.gamenever.ui.RootNavigator
 import com.foresko.gamenever.ui.destinations.destinations.PremiumScreenDestination
 import com.foresko.gamenever.ui.destinations.destinations.PrivacyPolicyScreenDestination
 import com.foresko.gamenever.ui.destinations.destinations.TermOfUseScreenDestination
-import com.foresko.gamenever.ui.destinations.game.UpgradeToPremiumDialog
 import com.foresko.gamenever.ui.swipe.CardStack
 import com.foresko.gamenever.ui.theme.INeverTheme
 import com.ramcosta.composedestinations.annotation.Destination
@@ -63,7 +61,6 @@ fun GameScreen(
     GameScreenContent(
         rootNavigator = rootNavigator,
         viewModel = viewModel,
-
         )
 }
 

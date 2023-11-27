@@ -23,7 +23,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -36,8 +35,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.amplitude.api.Amplitude
 import com.foresko.gamenever.R
 import com.foresko.gamenever.core.rest.Card
-import com.foresko.gamenever.core.rest.GameModel
-import com.foresko.gamenever.ui.destinations.game.CloseButton
+import com.foresko.gamenever.ui.destination.game.CloseButton
 import com.foresko.gamenever.ui.theme.INeverTheme
 
 

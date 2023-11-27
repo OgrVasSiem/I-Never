@@ -24,6 +24,7 @@ import com.foresko.gamenever.core.apollo.TechnicalError
 import com.foresko.gamenever.core.utils.emptyString
 import com.foresko.gamenever.dataStore.OnboardingState
 import com.foresko.gamenever.dataStore.PremiumDataStore
+import com.foresko.gamenever.dataStore.Session
 import com.foresko.gamenever.dataStore.ShowOnboardingDataStore
 import com.foresko.gamenever.ui.destination.premium.TariffType
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -47,13 +48,13 @@ class PremiumViewModel @Inject constructor(
     private val commandDispatcher: CommandDispatcher,
     @ApplicationContext applicationContext: Context
 ) : ViewModel() {
-    var account by mutableStateOf(GoogleSignIn.getLastSignedInAccount(applicationContext))
+    var session by mutableStateOf<Session?>(null)
         private set
 
     var premiumEndDateInEpochMilli by mutableStateOf(0L)
         private set
 
-    var premiumIsActive by mutableStateOf<Boolean?>(null)
+    var premiumIsActive by mutableStateOf(false)
         private set
 
     var onboardingState by mutableStateOf<OnboardingState?>(null)
@@ -70,7 +71,7 @@ class PremiumViewModel @Inject constructor(
     fun changeTariffType(tariffType: TariffType) {
         this.tariffType = tariffType
         subscriptionId = inAppSubscriptions
-            .firstOrNull { it.subscriptionName == tariffType.SBPSubscribeName }?.id ?: emptyString
+            .firstOrNull { it.subscriptionName == tariffType.googlePurchaseName }?.id ?: emptyString
     }
 
     var isNetworkConnectionError by mutableStateOf(false)
@@ -82,6 +83,9 @@ class PremiumViewModel @Inject constructor(
 
     private var _productDetails = MutableStateFlow<ProductDetails?>(null)
     val productDetails = _productDetails.asStateFlow()
+
+    private var _purchasesSubscribe = MutableStateFlow<List<Purchase>>(emptyList())
+    val purchasesSubscribe = _purchasesSubscribe.asStateFlow()
 
     fun buyGoogleSubscription(
         productDetails: ProductDetails,
@@ -107,6 +111,7 @@ class PremiumViewModel @Inject constructor(
                 showOnboardingDataStore.updateData { onboarding.copy(default = false) }
             }
         }
+
         viewModelScope.launch {
             queryDispatcher.dispatch(GetPremiumQuery).collectLatest {
                 premiumEndDateInEpochMilli = it.expiryDateTime
@@ -115,16 +120,7 @@ class PremiumViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            premiumDataStore.data.collectLatest {
-                premiumEndDateInEpochMilli = it.expiryDateTime
-                appOpenedEvent(it.isActive)
-
-                premiumIsActive = it.isActive
-            }
-        }
-
-        viewModelScope.launch {
-            if (premiumIsActive == false) {
+            if (!premiumIsActive) {
                 queryDispatcher.dispatch(GetInAppSubscriptionsQuery)
                     .collectLatest { subscriptions ->
                         when (subscriptions) {
@@ -149,7 +145,7 @@ class PremiumViewModel @Inject constructor(
 
         viewModelScope.launch {
             queryDispatcher.dispatch(GetSessionQuery).collectLatest {
-                account = GoogleSignIn.getLastSignedInAccount(applicationContext)
+                session = session
             }
         }
 
@@ -159,8 +155,23 @@ class PremiumViewModel @Inject constructor(
             }
         }
 
+        viewModelScope.launch {
+            queryDispatcher.dispatch(GetPurchasesSubscribeQuery)
+                .collectLatest { purchasesSubscribe ->
+                    _purchasesSubscribe.value = purchasesSubscribe
+                }
+        }
 
+        viewModelScope.launch {
+            premiumDataStore.data.collectLatest {
+                premiumEndDateInEpochMilli = it.expiryDateTime
+                appOpenedEvent(it.isActive)
+
+                premiumIsActive = it.isActive
+            }
+        }
     }
+
 
     private fun appOpenedEvent(premiumIsActive: Boolean) {
         val eventProperties = JSONObject()
