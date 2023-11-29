@@ -1,6 +1,7 @@
 package com.foresko.gamenever.ui.destination.game
 
 import android.app.Activity
+import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
@@ -22,18 +23,24 @@ import com.foresko.gamenever.dataBase.repositories.CardRepository
 import com.foresko.gamenever.dataStore.PremiumDataStore
 import com.foresko.gamenever.ui.destinations.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import ru.rustore.sdk.core.tasks.OnCompleteListener
+import ru.rustore.sdk.review.RuStoreReviewManagerFactory
+import ru.rustore.sdk.review.model.ReviewInfo
 import javax.inject.Inject
 import kotlin.math.min
+
 
 @HiltViewModel
 class GameViewModel @Inject constructor(
     private val ads: Ads,
     private val cardRepository: CardRepository,
     private val premiumDataStore: PremiumDataStore,
+    @ApplicationContext applicationContext: Context,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -92,9 +99,11 @@ class GameViewModel @Inject constructor(
 
         initAds()
 
-        viewModelScope.launch{
+        viewModelScope.launch {
             monitorPremiumStatus()
         }
+
+        // init(applicationContext)
     }
 
     private suspend fun monitorPremiumStatus() {
@@ -152,18 +161,57 @@ class GameViewModel @Inject constructor(
                 if (!premiumIsActive && (swipeCount % 10 == 0)) {
                     showAds(activity)
                 }
-
             }
         }
     }
 
     private fun initAds() {
-        if (ads.interstitialAd == null) {
-            ads.initAds()
-        }
+        ads.initYandexAds()
     }
 
     private fun showAds(activity: Activity) {
-        ads.showAd(activity = activity) {}
+        ads.showInterstitialAd(activity = activity) {}
     }
+
+    /* private var reviewManager = RuStoreReviewManagerFactory.create(applicationContext)
+     private var reviewInfo: ReviewInfo? = null
+     private var isInitCalled: Boolean = false
+
+
+     fun init(applicationContext: Context) {
+         reviewManager = RuStoreReviewManagerFactory.create(applicationContext)
+         requestReviewFlow()
+         launchReviewFlow()
+         isInitCalled = true
+     }
+
+     private fun requestReviewFlow() {
+         reviewManager.requestReviewFlow().addOnCompleteListener(object :
+             OnCompleteListener<ReviewInfo> {
+             override fun onFailure(throwable: Throwable) {
+                 Log.d("ReviewFlow", "Error obtaining ReviewInfo: ${throwable.message}")
+             }
+
+             override fun onSuccess(result: ReviewInfo) {
+                 reviewInfo = result
+                 Log.d("ReviewFlow", "ReviewInfo successfully obtained: $reviewInfo")
+             }
+         })
+     }
+
+     fun launchReviewFlow() {
+         val reviewInfo = reviewInfo
+         if (reviewInfo != null) {
+             reviewManager.launchReviewFlow(reviewInfo)
+                 .addOnCompleteListener(object : OnCompleteListener<Unit> {
+                     override fun onFailure(throwable: Throwable) {
+
+                     }
+
+                     override fun onSuccess(result: Unit) {
+
+                     }
+                 })
+         }
+     }*/
 }

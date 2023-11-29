@@ -14,16 +14,11 @@ import com.foresko.gamenever.application.operations.commands.authorizationComman
 import com.foresko.gamenever.application.operations.queries.dataStoreQueries.GetPremiumQuery
 import com.foresko.gamenever.application.operations.queries.dataStoreQueries.GetSessionQuery
 import com.foresko.gamenever.core.google.AuthResult
-import com.foresko.gamenever.core.network.NetworkStatus
-import com.foresko.gamenever.core.network.NetworkStatusTracker
 import com.foresko.gamenever.dataStore.Session
-import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.tasks.Task
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch

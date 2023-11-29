@@ -2,89 +2,129 @@ package com.foresko.gamenever.core.ads
 
 import android.app.Activity
 import android.content.Context
-import android.util.Log
-import com.amplitude.api.Amplitude
-import com.appodeal.ads.Appodeal
-import com.appodeal.ads.InterstitialCallbacks
-import com.google.android.gms.ads.AdError
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.FullScreenContentCallback
-import com.google.android.gms.ads.LoadAdError
-import com.google.android.gms.ads.interstitial.InterstitialAd
-import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
+import com.yandex.mobile.ads.common.AdError
+import com.yandex.mobile.ads.common.AdRequestConfiguration
+import com.yandex.mobile.ads.common.AdRequestError
+import com.yandex.mobile.ads.common.ImpressionData
+import com.yandex.mobile.ads.interstitial.InterstitialAd
+import com.yandex.mobile.ads.interstitial.InterstitialAdEventListener
+import com.yandex.mobile.ads.interstitial.InterstitialAdLoadListener
+import com.yandex.mobile.ads.interstitial.InterstitialAdLoader
+import com.yandex.mobile.ads.rewarded.Reward
+import com.yandex.mobile.ads.rewarded.RewardedAd
+import com.yandex.mobile.ads.rewarded.RewardedAdEventListener
+import com.yandex.mobile.ads.rewarded.RewardedAdLoadListener
+import com.yandex.mobile.ads.rewarded.RewardedAdLoader
 
-class Ads(
-    val context: Context
-) {
-    var interstitialAd: InterstitialAd? = null
-        private set
+class Ads(val context: Context) {
+    private var interstitialAd: InterstitialAd? = null
+    private var rewardAd: RewardedAd? = null
+    private var interstitialAdLoader: InterstitialAdLoader? = null
+    private var rewardedAdLoader: RewardedAdLoader? = null
 
-    fun initAds() {
-        val adRequest = AdRequest.Builder().build()
-        InterstitialAd.load(
-            context,
-            "ca-app-pub-5693620155650275~9805635036",
-            adRequest,
-            object : InterstitialAdLoadCallback() {
-                override fun onAdFailedToLoad(adError: LoadAdError) {
-                    adError.toString().let { Log.d("ads", "error = $it") }
-                    interstitialAd = null
-                }
-
+    fun initYandexAds() {
+        interstitialAdLoader = InterstitialAdLoader(context).apply {
+            setAdLoadListener(object : InterstitialAdLoadListener {
                 override fun onAdLoaded(ad: InterstitialAd) {
-
                     interstitialAd = ad
                 }
+
+                override fun onAdFailedToLoad(adRequestError: AdRequestError) {
+                }
             })
+        }
+        loadInterstitialAd()
     }
 
-    fun showAd(activity: Activity, handle: () -> Unit) {
-        interstitialAd?.let { ad ->
-            ad.fullScreenContentCallback = object : FullScreenContentCallback() {
-                override fun onAdDismissedFullScreenContent() {
+    fun initYandexRewardedAds() {
+        rewardedAdLoader = RewardedAdLoader(context).apply {
+            setAdLoadListener(object : RewardedAdLoadListener {
+                override fun onAdLoaded(rewardedAd: RewardedAd) {
+                    rewardAd = rewardedAd
+                }
+
+                override fun onAdFailedToLoad(adRequestError: AdRequestError) {
+                }
+            })
+        }
+        loadRewerdedAd()
+    }
+
+    private fun loadInterstitialAd() {
+        val adRequestConfiguration =
+            AdRequestConfiguration.Builder("R-M-4122932-1").build()
+        interstitialAdLoader?.loadAd(adRequestConfiguration)
+    }
+
+    private fun loadRewerdedAd() {
+        val adRequestConfiguration =
+            AdRequestConfiguration.Builder("R-M-4122932-2").build()
+        rewardedAdLoader?.loadAd(adRequestConfiguration)
+    }
+
+    fun showInterstitialAd(activity: Activity, handle: () -> Unit) {
+        interstitialAd?.apply {
+            setAdEventListener(object : InterstitialAdEventListener {
+                override fun onAdShown() {
+                }
+
+                override fun onAdFailedToShow(adError: AdError) {
+                    cleanUpAd()
+                    loadInterstitialAd()
+                }
+
+                override fun onAdDismissed() {
                     handle()
-                    interstitialAd = null
+                    cleanUpAd()
+                    loadInterstitialAd()
                 }
 
-                override fun onAdFailedToShowFullScreenContent(p0: AdError) {
-                    interstitialAd = null
+                override fun onAdClicked() {
                 }
 
-                override fun onAdShowedFullScreenContent() {
+                override fun onAdImpression(impressionData: ImpressionData?) {
                 }
-            }
-
-            Amplitude.getInstance().logEvent("advertisement")
-
-            ad.show(activity)
-        } ?: run {
-            showAppodealInterstitialAds(activity = activity, handle = handle)
+            })
+            show(activity)
         }
     }
 
-    private fun showAppodealInterstitialAds(activity: Activity, handle: () -> Unit) {
-        Appodeal.setInterstitialCallbacks(object : InterstitialCallbacks {
-            override fun onInterstitialExpired() {}
-            override fun onInterstitialFailedToLoad() {}
-            override fun onInterstitialLoaded(isPrecache: Boolean) {}
-            override fun onInterstitialShowFailed() {}
+    fun showRewardAd(activity: Activity, handle: () -> Unit) {
+        rewardAd?.apply {
+            setAdEventListener(object : RewardedAdEventListener {
+                override fun onAdShown() {
+                }
 
-            override fun onInterstitialClicked() {}
+                override fun onAdFailedToShow(adError: AdError) {
+                    cleanRewardedUpAd()
+                    loadRewerdedAd()
+                }
 
-            override fun onInterstitialClosed() {
-                handle()
-            }
+                override fun onAdDismissed() {
+                    cleanRewardedUpAd()
+                    loadRewerdedAd()
+                }
 
-            override fun onInterstitialShown() {}
+                override fun onAdClicked() {
+                }
 
-        })
+                override fun onAdImpression(impressionData: ImpressionData?) {
+                }
 
-        if (Appodeal.isLoaded(Appodeal.INTERSTITIAL)) {
-            Amplitude.getInstance().logEvent("advertisement")
-
-            Appodeal.show(activity, Appodeal.INTERSTITIAL)
-        } else {
-            handle()
+                override fun onRewarded(reward: Reward) {
+                    handle()
+                }
+            })
+            show(activity)
         }
+    }
+
+    private fun cleanUpAd() {
+        interstitialAd?.setAdEventListener(null)
+        interstitialAd = null
+    }
+    private fun cleanRewardedUpAd() {
+        rewardAd?.setAdEventListener(null)
+        rewardAd = null
     }
 }

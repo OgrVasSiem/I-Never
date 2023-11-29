@@ -4,6 +4,7 @@ buildscript {
         mavenCentral()
         maven { url 'https://jitpack.io' }
         maven { url "https://artifactory.appodeal.com/appodeal" }
+        maven { url "https://artifactory-external.vkpartner.ru/artifactory/maven" }
     }
 
     dependencies {

@@ -35,7 +35,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.amplitude.api.Amplitude
 import com.foresko.gamenever.R
 import com.foresko.gamenever.core.rest.Card
-import com.foresko.gamenever.ui.destination.game.CloseButton
+import com.foresko.gamenever.ui.destinations.game.CloseButton
 import com.foresko.gamenever.ui.theme.INeverTheme
 
 

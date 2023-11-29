@@ -1,5 +1,6 @@
 package com.foresko.gamenever.ui.destination.game
 
+import android.app.Activity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -14,6 +15,7 @@ import androidx.compose.material.Card
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -46,6 +48,7 @@ import com.foresko.gamenever.ui.RootNavigator
 import com.foresko.gamenever.ui.destinations.destinations.PremiumScreenDestination
 import com.foresko.gamenever.ui.destinations.destinations.PrivacyPolicyScreenDestination
 import com.foresko.gamenever.ui.destinations.destinations.TermOfUseScreenDestination
+import com.foresko.gamenever.ui.destinations.game.UpgradeToPremiumDialog
 import com.foresko.gamenever.ui.swipe.CardStack
 import com.foresko.gamenever.ui.theme.INeverTheme
 import com.ramcosta.composedestinations.annotation.Destination
@@ -61,7 +64,7 @@ fun GameScreen(
     GameScreenContent(
         rootNavigator = rootNavigator,
         viewModel = viewModel,
-        )
+    )
 }
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -75,6 +78,8 @@ fun GameScreenContent(
     val activity = LocalActivity.current
 
     val premiumIsActive = viewModel.premiumIsActive
+
+    val context = LocalContext.current
 
     if (isLastCard) {
         if (premiumIsActive) {
@@ -126,6 +131,7 @@ fun ProfileCard(
     scaleFactor: Float = 1f
 ) {
     val backgroundColor = Color(questionWithCard.colorInt ?: Color.Transparent.toArgb())
+
     Card(
         modifier = modifier
             .fillMaxSize()

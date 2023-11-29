@@ -64,6 +64,4 @@ object DataStoreModule {
     fun provideReminderAboutPremiumDataStore(@ApplicationContext context: Context): ReminderAboutPremiumDataStore {
         return ReminderAboutPremiumDataStore(context = context)
     }
-
-
 }

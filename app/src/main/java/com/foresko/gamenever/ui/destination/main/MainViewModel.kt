@@ -53,10 +53,11 @@ class MainViewModel @Inject constructor(
     val questionCounts: StateFlow<Map<Long, Int>> = _questionCounts.asStateFlow()
     private suspend fun loadQuestionCountForCards() {
         val counts = cardDao.getQuestionCountForCards()
-            .associateBy({ it.cardId}, { it.textCount })
+            .associateBy({ it.cardId }, { it.textCount })
 
         _questionCounts.value = counts
     }
+
     init {
         Amplitude.getInstance().logEvent("main_screen")
 
@@ -108,6 +109,7 @@ class MainViewModel @Inject constructor(
             FirebaseCrashlytics.getInstance().recordException(e)
         }
     }
+
     private suspend fun monitorPremiumStatus() {
         premiumDataStore.data.collectLatest {
             premiumEndDateInEpochMilli = it.expiryDateTime
@@ -135,12 +137,11 @@ class MainViewModel @Inject constructor(
     }
 
     private fun initAds() {
-        if (ads.interstitialAd == null) {
-            ads.initAds()
-        }
+        ads.initYandexAds()
     }
+
     fun showAds(activity: Activity, onAdClosed: () -> Unit) {
-        ads.showAd(activity = activity) {
+        ads.showRewardAd(activity = activity) {
             onAdClosed()
         }
     }

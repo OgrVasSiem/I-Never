@@ -13,8 +13,8 @@ import com.amplitude.api.Amplitude
 import com.foresko.gamenever.core.ads.Ads
 import com.foresko.gamenever.core.premium.PremiumSynchronizationManager
 import com.foresko.gamenever.dataBase.AppDatabase
-import com.google.android.gms.ads.MobileAds
 import com.google.firebase.FirebaseApp
+import com.yandex.mobile.ads.common.MobileAds
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
 
@@ -47,13 +47,13 @@ class INeverApplication : Application(), ImageLoaderFactory {
         FirebaseApp.initializeApp(this)
 
         MobileAds.initialize(this) {
-            ads.initAds()
+            ads.initYandexAds()
+            ads.initYandexRewardedAds()
         }
 
-        premiumSynchronizationManager.init()
+        Amplitude.getInstance().logEvent("AppOpened")
 
-        Amplitude.getInstance()
-            .initialize(this, "06b57e7f021b7247be2003d012907f73")
+        premiumSynchronizationManager.init()
     }
 
 

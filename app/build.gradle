@@ -20,8 +20,8 @@ android {
         applicationId "com.foresko.gamenever"
         minSdk 24
         targetSdk 34
-        versionCode 7
-        versionName "1.0.8"
+        versionCode 8
+        versionName "1.0.9"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -118,6 +118,8 @@ dependencies {
     def composeUiVersion = "1.5.3"
     def appcompat_version = "1.6.1"
 
+    implementation("ru.rustore.sdk:review:1.0.0")
+
     //Appcompat
     implementation "androidx.appcompat:appcompat:$appcompat_version"
     implementation "androidx.appcompat:appcompat-resources:$appcompat_version"
@@ -201,13 +203,8 @@ dependencies {
     //DataStore
     implementation "androidx.datastore:datastore-preferences:1.0.0"
 
-    //AdMob
-    implementation 'com.google.android.gms:play-services-ads:22.5.0'
-    //Appodeal
-    implementation('com.appodeal.ads:sdk:3.0.2.0') {
-        exclude group: 'com.appodeal.ads.sdk.networks', module: 'adcolony'
-        exclude group: 'com.appodeal.ads.sdk.networks', module: 'facebook'
-    }
+    //YandexAds
+    implementation 'com.yandex.android:mobileads:6.2.0'
 
     //LottieAnimation
     implementation "com.airbnb.android:lottie-compose:6.0.0"

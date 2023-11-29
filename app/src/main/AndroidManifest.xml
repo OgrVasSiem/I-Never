@@ -27,8 +27,8 @@
         tools:replace="android:allowBackup, android:fullBackupContent">
 
         <meta-data
-            android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-5693620155650275~6369507812" />
+            android:name="com.yandex.mobile.ads.AUTOMATIC_SDK_INITIALIZATION"
+            android:value="false" />
         <activity
             android:name=".MainActivity"
             android:screenOrientation="locked"

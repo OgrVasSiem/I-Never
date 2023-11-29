@@ -34,6 +34,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.times
 import coil.compose.rememberAsyncImagePainter
+import com.amplitude.api.Amplitude
 import com.foresko.gamenever.R
 import com.foresko.gamenever.core.rest.Card
 import com.foresko.gamenever.core.rest.GameModel
@@ -77,6 +78,9 @@ fun MainCard(
 
                 } else {
                     cardState.showDialog.value = true
+                    Amplitude
+                        .getInstance()
+                        .logEvent("ads_watch_screen")
                 }
             })
     ) {
