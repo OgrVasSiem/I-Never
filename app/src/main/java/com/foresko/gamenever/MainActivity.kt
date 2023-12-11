@@ -21,8 +21,6 @@ class MainActivity : ComponentActivity() {
         window.statusBarColor = Color.TRANSPARENT
         window.navigationBarColor = Color.TRANSPARENT
 
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-
         setContent {
             CompositionLocalProvider(
                 LocalActivity provides this@MainActivity,

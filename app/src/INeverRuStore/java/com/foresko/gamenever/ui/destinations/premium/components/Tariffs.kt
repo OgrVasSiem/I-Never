@@ -163,7 +163,7 @@ fun Tariffs(
                 modifier = Modifier.weight(animatedScaleXMonth),
                 isActive = tariffType == TariffType.Month,
                 changeTariffType = {
-                    Amplitude.getInstance().logEvent("onboarding_welcome_screen", JSONObject().put("type", "month"))
+                    Amplitude.getInstance().logEvent("tariff_selection", JSONObject().put("type", "month"))
                     changeTariffType(TariffType.Month) },
                 typeName = 1.formatAsMonthWordEnding().lowercase(),
                 premiumPrice = monthSubscribePrice,
@@ -231,7 +231,7 @@ fun Tariffs(
                 DefaultTariffBox(
                     isActive = tariffType == TariffType.Year,
                     changeTariffType = {
-                        Amplitude.getInstance().logEvent("onboarding_welcome_screen", JSONObject().put("type", "year"))
+                        Amplitude.getInstance().logEvent("tariff_selection", JSONObject().put("type", "year"))
                         changeTariffType(TariffType.Year) },
                     typeName = stringResource(R.string.year).lowercase(),
                     premiumPrice = yearSubscribePrice,
@@ -249,7 +249,7 @@ fun Tariffs(
                 modifier = Modifier.weight(animatedScaleXYear),
                 isActive = tariffType == TariffType.ThreeMonth,
                 changeTariffType = {
-                    Amplitude.getInstance().logEvent("onboarding_welcome_screen", JSONObject().put("type", "threeMonth"))
+                    Amplitude.getInstance().logEvent("tariff_selection", JSONObject().put("type", "threeMonth"))
                     changeTariffType(TariffType.ThreeMonth) },
                 typeName = 3.formatAsMonthWordEnding().lowercase(),
                 premiumPrice = threeMonthSubscribePrice,

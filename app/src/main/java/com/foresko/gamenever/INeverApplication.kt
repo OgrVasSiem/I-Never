@@ -1,9 +1,6 @@
 package com.foresko.gamenever
 
-import android.app.ActivityManager
 import android.app.Application
-import android.content.Context
-import android.os.Process
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.room.Room
 import coil.ImageLoader
@@ -30,13 +27,6 @@ class INeverApplication : Application(), ImageLoaderFactory {
     @Inject
     lateinit var workerFactory: HiltWorkerFactory
 
-    private fun isMainProcess(): Boolean {
-        val pid = Process.myPid()
-        val activityManager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
-        val processInfo = activityManager.runningAppProcesses?.firstOrNull { it.pid == pid }
-        return processInfo?.processName == packageName
-    }
-
     val database: AppDatabase by lazy {
         Room.databaseBuilder(this, AppDatabase::class.java, "app_db").build()
     }
@@ -46,12 +36,15 @@ class INeverApplication : Application(), ImageLoaderFactory {
 
         FirebaseApp.initializeApp(this)
 
+        Amplitude.getInstance()
+            .initialize(this, "06b57e7f021b7247be2003d012907f73")
+
         MobileAds.initialize(this) {
             ads.initYandexAds()
             ads.initYandexRewardedAds()
         }
 
-        Amplitude.getInstance().logEvent("AppOpened")
+        Amplitude.getInstance().logEvent("app_opened")
 
         premiumSynchronizationManager.init()
     }
